@@ -120,7 +120,7 @@ def main():
             parser.add_argument('--series', '--sequence', type=argparse.FileType('r'))
             arguments = parser.parse_args()
         except Exception as e:
-            """Never gets here, it seems; argparse handles errors internally(?)"""
+            """Never gets here, it seems; argparse handles errors """
             print(str(e))
         return arguments
     
@@ -157,11 +157,10 @@ def main():
         return sum(find_next_value(seq) for seq in sequences)
 
     
-    # Example usage
-
+    # Get command-line arguments
     args = parse_arguments()
     if args.series:
-        """Got a json filename on the command line (option: --series)"""
+        """Got a json filename on the command line (option: --series)."""
         try:
             with args.series as f:
                 """Load the json data and append the sequences to the list of sequences"""
@@ -177,9 +176,11 @@ def main():
             print(str(e), file=sys.stderr)
             raise SystemExit(1)
         except (OSError) as e:
+            # Will probably never get here since argparse will complain if the
+            # file doesn't exist or isn't readable...
             print("Got an OSError:", file=sys.stderr)
             print(str(e), file=sys.stdout)
-            raise SystemExit(1)
+            raise SystemExit(2)
     else:
         sequences = [ [0, 3, 6, 9, 12, 15],
             [1, 3, 6, 10, 15, 21],
