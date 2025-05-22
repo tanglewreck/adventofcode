@@ -50,6 +50,16 @@
 
     Once again consider your left and right lists. What is their similarity
     score?
+
+    ------------------------------------------------------------------------
+    similarity score = 21271939
+
+    That's the right answer! You are one gold star closer to finding the Chief
+    Historian.
+
+    You have completed Day 1!
+    ------------------------------------------------------------------------
+
 """
 
 # pylint: disable=unused-import
@@ -82,7 +92,7 @@ def day_1_part_2():
     df = import_data(1)
 
     # Compute and print the similarity score
-    print(similarity_score())
+    print(f"Similarity score = {similarity_score()}")
 
 
 def main():
