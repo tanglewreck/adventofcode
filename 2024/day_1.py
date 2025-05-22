@@ -145,7 +145,8 @@ def day_1():
     print(f"1. sum of differences = {s}")
 
 
-    # Alternative approach:
+def day_1_alt_1():
+    """day_1_alt_1()"""
     # pylint: disable=unused-variable
     dataprod = "day_1_data"
     dataexample = "day_1_data_example"
@@ -165,8 +166,15 @@ def day_1():
         s += abs(x - c2[k])
     print(f"2. sum of differences = {s}")
 
-    # Another approach which makes the linter happy:
-    with open(data, encoding="utf-8") as fp:
+def day_1_alt_2():
+    """day_1_alt_2()"""
+    # pylint: disable=unused-variable
+    dataprod = "day_1_data"
+    dataexample = "day_1_data_example"
+    data = dataexample
+    # pylint: enable=unused-variable
+
+    with open(data) as fp:
         s = 0
         c1, c2 = [], []
         while row := fp.readline():
