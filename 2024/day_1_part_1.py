@@ -1,6 +1,6 @@
 """
     Advent of Code 2024
-    Day 1
+    Day 1, part 1
 
    --- Day 1: Historian Hysteria ---
 
@@ -132,9 +132,9 @@ def sort_data(df: pd.DataFrame) -> None:
         np.asarray(df[column]).sort()
 
 
-def day_1():
+def day_1_part_1():
     """day_1()"""
-    example = True
+    example = False
     # Import data
     df = import_data(nday=1, example=example)
     # Sort columns
@@ -146,7 +146,7 @@ def day_1():
     print(f"1. sum of differences = {s}")
 
 
-def day_1_alt_1():
+def day_1_part_1_alt_1():
     """day_1_alt_1()"""
     # pylint: disable=unused-variable
     dataprod = "day_1_data"
@@ -167,7 +167,7 @@ def day_1_alt_1():
         s += abs(x - c2[k])
     print(f"2. sum of differences = {s}")
 
-def day_1_alt_2():
+def day_1_part_1_alt_2():
     """day_1_alt_2()"""
     # pylint: disable=unused-variable
     dataprod = "day_1_data"
@@ -193,7 +193,7 @@ def day_1_alt_2():
 
 def main():
     """main()"""
-    day_1()
+    day_1_part_1()
 
 
 if __name__ == "__main__":

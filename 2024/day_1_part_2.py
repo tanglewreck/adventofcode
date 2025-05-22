@@ -1,6 +1,6 @@
 """
     Advent of Code 2024
-    Day 2
+    Day 1, part 2
 
     The first half of this puzzle is complete! It provides one gold star: *
     Your puzzle answer was 2367773.
@@ -58,11 +58,11 @@ import pandas as pd
 # pylint: enable=unused-import
 
 # pylint: disable=import-error
-from day_1 import import_data  # , sort_data
+from day_1_part_1 import import_data  # , sort_data
 # pylint: enable=import-error
 
-def day_2():
-    """day_2()"""
+def day_1_part_2():
+    """day_1_part_2()"""
 
     def similarity_score():
         """Compute similarity score as described above"""
@@ -87,7 +87,7 @@ def day_2():
 
 def main():
     """main() - a redundant level of indirection..."""
-    day_2()
+    day_1_part_2()
 
 
 if __name__ == "__main__":
