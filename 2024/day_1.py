@@ -134,11 +134,12 @@ def sort_data(df: pd.DataFrame) -> None:
 
 def day_1():
     """day_1()"""
+    example = True
     # Import data
-    df = import_data(nday=1, example=False)
+    df = import_data(nday=1, example=example)
     # Sort columns
     sort_data(df)
-    export_data(df, 1, example=False)
+    export_data(df, 1, example=example)
 
     # Print result
     s = sum(abs(df["C1"] - df["C2"]))
