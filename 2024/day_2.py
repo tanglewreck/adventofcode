@@ -52,23 +52,42 @@
     score?
 """
 
+# pylint: disable=unused-import
 import numpy as np
 import pandas as pd
+# pylint: enable=unused-import
 
-DATA = "day_1.data"
-DATAEXAMPLE = "day_1_example_data"
+# pylint: disable=import-error
+from day_1 import import_data  # , sort_data
+# pylint: enable=import-error
+
+def day_2():
+    """day_2()"""
+
+    def similarity_score():
+        """Compute similarity score as described above"""
+        score = 0
+        for val_c1 in df.C1:  # For every value in column 1...
+            # Select from the second column the values
+            # which are equal to the current value of 
+            # columnt 1
+            n_val_c1_in_c2 = len(df.loc[df.C2 == val_c1])
+            # Multiply the number of occurrences with the
+            # current column-one-value
+            score += (n_val_c1_in_c2 * val_c1)
+        return score
+
+    # Import data to dataframe
+    # df = import_data(1, example=True)
+    df = import_data(1)
+
+    # Compute and print the similarity score
+    print(similarity_score())
+
 
 def main():
-    """main"""
-    # Import data
-    df = pd.read_table(DATA, sep=",")
-    # Sort columns
-    np.asarray(df["C1"]).sort()
-    np.asarray(df["C2"]).sort()
-
-    # Print result
-    s = sum(abs(df["C1"] - df["C2"]))
-    print(f"sum of differences = {s}")
+    """main() - a redundant level of indirection..."""
+    day_2()
 
 
 if __name__ == "__main__":
