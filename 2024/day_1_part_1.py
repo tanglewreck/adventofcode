@@ -94,15 +94,25 @@ import pandas as pd
 def import_data(nday: int, example=False) -> pd.DataFrame | None:
     """
         import_data
-            Read a comma-separated datafile.
-            Return a pandas.DataFrame
+            - Reads a comma-separated datafile.
+            - Returns a pandas.DataFrame, dtype=int,
+              with NaN's replaced by zeroes.
+            - The file should be named "day_<n>_data[_example]",
+              where n is an integer and the '_example' suffix
+              is optional.
     """
     fname = "day_" + str(nday) + "_data"
     if example:
         fname += "_example"
     try:
         with open(fname) as fp:
-            return pd.read_csv(fp, sep=",")
+            temp_df = pd.read_csv(fp, sep=",", dtype=float)  # dtype=int, na_values=0)
+            # Replace NaN's with 0.0
+            temp_df.fillna(0.0, inplace=True)
+            # Convert to int
+            temp_df = temp_df.astype(int)
+            temp_df.to_csv(fname + "_padded", sep=",", index=None)
+            return temp_df
     except (OSError, pd.errors.ParserError) as e:
         print(repr(e), file=sys.stderr)
     return None
