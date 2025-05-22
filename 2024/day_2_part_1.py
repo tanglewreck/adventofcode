@@ -50,6 +50,12 @@
 
     Analyze the unusual data from the engineers. How many reports are safe?
 
+    ------------------------------------------------------------
+    Your puzzle answer was 282.
+
+    The first half of this puzzle is complete! It provides one gold star: *
+    ------------------------------------------------------------
+
 """
 
 
@@ -59,15 +65,69 @@ import pandas as pd
 # pylint: enable=unused-import
 
 # pylint: disable=import-error
-from day_2_part_1 import import_data  # , sort_data
+from day_1_part_1 import import_data  # , sort_data
 # pylint: enable=import-error
+
+# pylint: disable=too-many-branches
+def check_safety(df, begin: int = 0, end: int|None = None, verbose=0) -> bool:
+    """evaluate report-safety"""
+    # Sanity checks
+    if not end:
+        end = len(df) - 1
+    assert begin < end
+    assert begin >= 0 and end < len(df)
+    # Initialise counter
+    nsafe = 0
+    nrows = 0
+    for i in range(begin, end + 1):
+        is_safe = True
+        nrows += 1
+        row = np.asarray(df.iloc[i, ])
+        lastdiff = row[1] - row[0]
+        if abs(lastdiff) < 1 or abs(lastdiff) > 3:
+            if verbose > 1:
+                print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
+                print(f"(diff = {lastdiff}, j=0): ", end="")
+                print(f"Row = {row}")
+            is_safe = False
+            continue
+        for j in range(1, len(row) - 1):
+            if row[j] == 0 or row[j + 1] == 0:
+                break
+            diff = row[j+1] - row[j]
+            if lastdiff * diff <= 0:
+                if verbose > 1:
+                    if lastdiff * diff < 0:
+                        print(f"Row {i:003d} NOT safe: SIGN change: ", end="")
+                    else:  # verbosity >= 2
+                        print(f"Row {i:003d} NOT safe: NO change: ", end="")
+                    print(f"({lastdiff * diff}, j={j}): ", end="")
+                    print(f"Row = {row}")
+                is_safe = False
+                break
+            if abs(diff) > 3 or abs(diff) < 1:
+                if verbose > 1:
+                    print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
+                    print(f"(diff = {diff}, j={j}): ", end="")
+                    print(f"Row = {row}")
+                is_safe = False
+                break
+            lastdiff = diff
+        if is_safe:
+            nsafe += 1
+            if verbose > 0:
+                print(f"Row {i:003d} SAFE: ", end="")
+                print(row)
+    return nsafe, nrows
+
 
 def day_2_part_2():
     """day_2_part_2()"""
 
     # Import data to dataframe
-    # df = import_data(1, example=True)
-    # df = import_data(2)
+    df = import_data(2, example=False)
+    nsafe_reports, nrows = check_safety(df, 0, len(df) - 1, verbose=2)
+    print(f"Number of safe reports = {nsafe_reports} (out of {nrows})")
 
 
 def main():
