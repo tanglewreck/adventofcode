@@ -69,7 +69,7 @@ def day_2():
         score = 0
         for val_c1 in df.C1:  # For every value in column 1...
             # Select from the second column the values
-            # which are equal to the current value of 
+            # which are equal to the current value of
             # columnt 1
             n_val_c1_in_c2 = len(df.loc[df.C2 == val_c1])
             # Multiply the number of occurrences with the
