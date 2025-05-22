@@ -1,5 +1,3 @@
-# mypy: disable_error_code="call-overload"
-
 """
     Advent of Code 2024
     Day 1
@@ -92,6 +90,9 @@ import sys
 import numpy as np
 import pandas as pd
 
+# mypy: disable_error_code="call-overload"
+# pylint: disable=unspecified-encoding
+
 
 DATAPROD = "day_1_data"
 DATAEXAMPLE = "day_1_data_example"
@@ -158,7 +159,7 @@ def day_1():
     c1, c2 = [], []
     # pylint: disable=consider-using-with
 
-# mypy: disable_error_code=unspecified-encoding
+# xxmypy: disable_error_code=unspecified-encoding
     for k, row in enumerate(open(DATA)):
         if k:
             d = [int(x) for x in row.strip().split(",")]
