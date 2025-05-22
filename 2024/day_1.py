@@ -1,3 +1,5 @@
+# xmypy: xdisable_error_code="call-overload"
+
 """
     Advent of Code 2024
     Day 1
@@ -86,20 +88,76 @@
 # Sort columns
 # For each row, compute the distance. Add to 'total_distance'
 
+import sys
 import numpy as np
 import pandas as pd
+from pandas.core.generic import NDFrame
 
-DATA = "day_1.data"
-DATAEXAMPLE = "day_1_example_data"
+# pylint: disable=unspecified-encoding
 
-def main():
-    """main"""
+DATAPROD = "day_1_data"
+DATAEXAMPLE = "day_1_data_example"
+DATA = DATAEXAMPLE
+
+def import_data(nday: int, example=False) -> pd.DataFrame | None:
+    """
+        import_data
+            Read a comma-separated datafile.
+            Return a pandas.DataFrame
+    """
+    fname = "day_" + str(nday) + "_data"
+    if example:
+        fname += "_example"
+    try:
+        with open(fname) as fp:
+            return pd.read_csv(fp, sep=",")
+    except (OSError, pd.errors.ParserError) as e:
+        print(repr(e), file=sys.stderr)
+    return None
+
+
+def export_data(df: pd.DataFrame, nday: int,
+                       example=False) -> pd.DataFrame | None:
+    """
+        export_data
+            Sort and export a dataframe to a
+            comma-separated (csv) file.
+    """
+    fname = "day_" + str(nday) + "_sorted_data"
+    if example:
+        fname += "_example"
+    try:
+        for column in df.columns:
+# mypy: disable_error_code="call-overload"
+            np.asarray(df[column]).sort()
+        df.to_csv(fname, sep=",", index=None)
+        return df
+    except (OSError, pd.errors.ParserError) as e:
+        print(repr(e), file=sys.stderr)
+        return None
+    return None
+
+
+def sort_data(df: pd.DataFrame) -> pd.DataFrame | None:
+    """
+        Sort dataframe columns 
+    """
+    for column in df.columns:
+# mypy: disable_error_code="call-overload"
+        np.asarray(df[column]).sort()
+
+
+def day_1():
+    """day_1()"""
     # Import data
-    df = pd.read_table(DATA, sep=",")
+    # df = import_data(nday=1, example=False)
+    df = import_data(nday=1, example=False)
     # df = pd.read_table(DATAEXAMPLE, sep=",")
     # Sort columns
     np.asarray(df["C1"]).sort()
     np.asarray(df["C2"]).sort()
+    sort_data(df)
+    df = export_data(df, 1, example=False)
 
     # Print result
     s = sum(abs(df["C1"] - df["C2"]))
@@ -108,6 +166,7 @@ def main():
 
     # Alternative approach:
     c1, c2 = [], []
+    # pylint: disable=consider-using-with
     for k, row in enumerate(open(DATA)):
         if k:
             d = [int(x) for x in row.strip().split(",")]
@@ -121,7 +180,7 @@ def main():
     print(f"2. sum of differences = {s}")
 
     # Another approach which makes the linter happy:
-    with open("day_1.data", encoding="utf-8") as fp:
+    with open(DATA, encoding="utf-8") as fp:
         s = 0
         c1, c2 = [], []
         while row := fp.readline():
@@ -135,6 +194,12 @@ def main():
         for k, c in enumerate(c1):
             s += abs(c - c2[k])
         print(f"3. sum of differences = {s}")
+
+
+def main():
+    """main()"""
+    day_1()
+
 
 if __name__ == "__main__":
     main()
