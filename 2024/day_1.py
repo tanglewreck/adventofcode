@@ -90,10 +90,6 @@ import sys
 import numpy as np
 import pandas as pd
 
-DATAPROD = "day_1_data"
-DATAEXAMPLE = "day_1_data_example"
-DATA = DATAEXAMPLE
-
 
 def import_data(nday: int, example=False) -> pd.DataFrame | None:
     """
@@ -141,8 +137,6 @@ def day_1():
     # Import data
     df = import_data(nday=1, example=False)
     # Sort columns
-    # np.asarray(df["C1"]).sort()
-    # np.asarray(df["C2"]).sort()
     sort_data(df)
     export_data(df, 1, example=False)
 
@@ -152,11 +146,14 @@ def day_1():
 
 
     # Alternative approach:
-    c1, c2 = [], []
-    # pylint: disable=consider-using-with
+    # pylint: disable=unused-variable
+    dataprod = "day_1_data"
+    dataexample = "day_1_data_example"
+    data = dataexample
+    # pylint: enable=unused-variable
 
-# xxmypy: disable_error_code=unspecified-encoding
-    for k, row in enumerate(open(DATA)):
+    c1, c2 = [], []
+    for k, row in enumerate(open(data)):
         if k:
             d = [int(x) for x in row.strip().split(",")]
             c1.append(d[0])
@@ -169,7 +166,7 @@ def day_1():
     print(f"2. sum of differences = {s}")
 
     # Another approach which makes the linter happy:
-    with open(DATA, encoding="utf-8") as fp:
+    with open(data, encoding="utf-8") as fp:
         s = 0
         c1, c2 = [], []
         while row := fp.readline():
