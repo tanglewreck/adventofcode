@@ -90,13 +90,10 @@ import sys
 import numpy as np
 import pandas as pd
 
-# mypy: disable_error_code="call-overload"
-# pylint: disable=unspecified-encoding
-
-
 DATAPROD = "day_1_data"
 DATAEXAMPLE = "day_1_data_example"
 DATA = DATAEXAMPLE
+
 
 def import_data(nday: int, example=False) -> pd.DataFrame | None:
     """
@@ -136,7 +133,6 @@ def sort_data(df: pd.DataFrame) -> None:
         Sort dataframe columns 
     """
     for column in df.columns:
-# mypy: disable_error_code="call-overload"
         np.asarray(df[column]).sort()
 
 
