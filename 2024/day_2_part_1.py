@@ -157,23 +157,24 @@ def check_row_safety(row: np.ndarray, row_num: int = 0, verbose=0) -> bool | Non
     diffarr = tmparr2 - tmparr1
     diffarr = diffarr[1:len(row)]  # Lose first and last elements
     # Print diagnostics if verbose
-    if verbose > 1:
+    if verbose > 2:
         print("row:", row, f"({len(row)})")
         print("tmparr1:", tmparr1, f"({len(tmparr1)})")
         print("tmparr2:", tmparr2, f"({len(tmparr2)})")
         print("diffarr:", diffarr, f"({len(diffarr)})")
-    if verbose > 0:
-        # A row is safe if all diffs have same sign, and  all diffs
-        # are less than or equal to 3:
-        safe = (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
-        if safe:
-            print(f"Row {row_num:003d} SAFE: {list(row)}")
+    if verbose > 1:
         # A row is not safe unless all diffs have the same sign
         if not all(diffarr > 0) and not all(diffarr < 0):
             print(f"Row {row_num:003d} NOT safe: SIGN change: {list(row)}")
         # A row is not safe unless all diffs are less than or equal to 3
         if not all(abs(diffarr) <= 3):
             print(f"Row {row_num:003d} NOT safe: diff TOO LARGE: {list(row)}")
+    if verbose > 0:
+        # A row is safe if all diffs have same sign, and  all diffs
+        # are less than or equal to 3:
+        safe = (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
+        if safe:
+            print(f"Row {row_num:003d} SAFE: {list(row)}")
     # Return true if all diffs have same sign, and  all diffs
     # are less than or equal to 3:
     return (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
