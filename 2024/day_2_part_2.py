@@ -148,7 +148,7 @@ def recheck_row(row, verbose=0) -> bool | None:
 def day_2_part_2():
     """day_2_part_2()"""
     # Import data to dataframe
-    df = import_data(2, example=True)
+    df = import_data(2, example=False)
     # Count the number of safe rows (reports)
     nsafe_reports = 0
     nsalvagable_reports = 0
