@@ -68,71 +68,153 @@ import pandas as pd
 from day_1_part_1 import import_data  # , sort_data
 # pylint: enable=import-error
 
+# - - - - - - -
+# OLD VERSION
+# - - - - - - -
 # pylint: disable=too-many-branches
-def check_safety(df, begin: int = 0, end: int|None = None, verbose=0) -> bool:
-    """evaluate report-safety"""
-    # Sanity checks
-    if not end:
-        end = len(df) - 1
-    assert begin < end
-    assert begin >= 0 and end < len(df)
-    # Initialise counter
-    nsafe = 0
-    nrows = 0
-    for i in range(begin, end + 1):
-        is_safe = True
-        nrows += 1
-        row = np.asarray(df.iloc[i, ])
-        lastdiff = row[1] - row[0]
-        if abs(lastdiff) < 1 or abs(lastdiff) > 3:
-            if verbose > 1:
-                print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
-                print(f"(diff = {lastdiff}, j=0): ", end="")
-                print(f"Row = {row}")
-            is_safe = False
-            continue
-        for j in range(1, len(row) - 1):
-            if row[j] == 0 or row[j + 1] == 0:
-                break
-            diff = row[j+1] - row[j]
-            if lastdiff * diff <= 0:
-                if verbose > 1:
-                    if lastdiff * diff < 0:
-                        print(f"Row {i:003d} NOT safe: SIGN change: ", end="")
-                    else:  # verbosity >= 2
-                        print(f"Row {i:003d} NOT safe: NO change: ", end="")
-                    print(f"({lastdiff * diff}, j={j}): ", end="")
-                    print(f"Row = {row}")
-                is_safe = False
-                break
-            if abs(diff) > 3 or abs(diff) < 1:
-                if verbose > 1:
-                    print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
-                    print(f"(diff = {diff}, j={j}): ", end="")
-                    print(f"Row = {row}")
-                is_safe = False
-                break
-            lastdiff = diff
-        if is_safe:
-            nsafe += 1
-            if verbose > 0:
-                print(f"Row {i:003d} SAFE: ", end="")
-                print(row)
-    return nsafe, nrows
+# def check_row_safety(df, begin: int = 0, end: int|None = None, verbose=0) -> bool:
+#     """evaluate report-safety"""
+#     # Sanity checks
+#     if not end:
+#         end = len(df) - 1
+#     assert begin < end
+#     assert begin >= 0 and end < len(df)
+#     # Initialise counter
+#     nsafe = 0
+#     nrows = 0
+#     for i in range(begin, end + 1):
+#         is_safe = True
+#         nrows += 1
+#         row = np.asarray(df.iloc[i, ])
+#         lastdiff = row[1] - row[0]
+#         if abs(lastdiff) < 1 or abs(lastdiff) > 3:
+#             if verbose > 1:
+#                 print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
+#                 print(f"(diff = {lastdiff}, j=0): ", end="")
+#                 print(f"Row = {row}")
+#             is_safe = False
+#             continue
+#         for j in range(1, len(row) - 1):
+#             if row[j] == 0 or row[j + 1] == 0:
+#                 break
+#             diff = row[j+1] - row[j]
+#             if lastdiff * diff <= 0:
+#                 if verbose > 1:
+#                     if lastdiff * diff < 0:
+#                         print(f"Row {i:003d} NOT safe: SIGN change: ", end="")
+#                     else:  # verbosity >= 2
+#                         print(f"Row {i:003d} NOT safe: NO change: ", end="")
+#                     print(f"({lastdiff * diff}, j={j}): ", end="")
+#                     print(f"Row = {row}")
+#                 is_safe = False
+#                 break
+#             if abs(diff) > 3 or abs(diff) < 1:
+#                 if verbose > 1:
+#                     print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
+#                     print(f"(diff = {diff}, j={j}): ", end="")
+#                     print(f"Row = {row}")
+#                 is_safe = False
+#                 break
+#             lastdiff = diff
+#         if is_safe:
+#             nsafe += 1
+#             if verbose > 0:
+#                 print(f"Row {i:003d} SAFE: ", end="")
+#                 print(row)
+#     return nsafe, nrows
 
 
-def day_2_part_2():
-    """day_2_part_2()"""
+def check_row_safety(row: np.ndarray, row_num: int, verbose=0) -> bool | None:
+    """
+        Check a sequence of numbers for 'safety':
 
+        A sequence is considered safe if
+            1. the sequence is monotonically and strictly
+               increasing or decreasing (all differences
+               between successive elements have the same sign
+               and is not zero), and
+            2. the absolute value of the difference between any pair
+               of successive elements less than or equal to 3.
+
+        In other words, if a is a sequence (a zero-based array) of real
+        numbers of length n, i ∈ ℕ: i ∈ (0, n - 1), and 
+        d[i] = a[i] - a[i+1] is the difference between two successive
+        elements in that array, then , a is safe iff 
+            1. d[i] > 0 or diff[i] < 0, for all i ∈ (0, n - 1), and
+            2. abs(d[i]) <= 3 for all i ∈ (0, n - 1).
+
+    """
+    if len(row) <2:
+        return None
+    # Create two temp-arrays
+    tmparr1 = np.append([0], row)  # add zero at the start
+    tmparr2 = np.append(row, [0])  # add zero at the end
+    # Calculate the difference btw the temp-arrays;
+    # this gives us the differences between successive
+    # elements in the input array (the first and last
+    # diffs are discarded since we are only interested
+    # in the 'internal' differences between elements)
+    diffarr = tmparr2 - tmparr1
+    diffarr = diffarr[1:len(row)]  # Lose first and last elements
+    # Print diagnostics if verbose
+    if verbose > 1:
+        print("row:", row, f"({len(row)})")
+        print("tmparr1:", tmparr1, f"({len(tmparr1)})")
+        print("tmparr2:", tmparr2, f"({len(tmparr2)})")
+        print("diffarr:", diffarr, f"({len(diffarr)})")
+    if verbose > 0:
+        # A row is safe if all diffs have same sign, and  all diffs
+        # are less than or equal to 3:
+        safe = (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
+        if safe:
+            print(f"Row {row_num:003d} SAFE: {list(row)}")
+        # A row is not safe unless all diffs have the same sign
+        if not all(diffarr > 0) and not all(diffarr < 0):
+            print(f"Row {row_num:003d} NOT safe: SIGN change: {list(row)}")
+        # A row is not safe unless all diffs are less than or equal to 3
+        if not all(abs(diffarr) <= 3):
+            print(f"Row {row_num:003d} NOT safe: diff TOO LARGE: {list(row)}")
+    # Return true if all diffs have same sign, and  all diffs
+    # are less than or equal to 3:
+    return (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
+
+
+# - - - - - - -
+# OLD VERSION
+# - - - - - - -
+# def day_2_part_1():
+#     """day_2_part_1()"""
+#
+#     # Import data to dataframe
+#     df = import_data(2, example=False)
+#     nsafe_reports, nrows = check_safety(df, 0, len(df) - 1, verbose=2)
+#     print(f"Number of safe reports = {nsafe_reports} (out of {nrows})")
+
+
+def day_2_part_1():
+    """day_2_part_1()"""
     # Import data to dataframe
     df = import_data(2, example=False)
-    nsafe_reports, nrows = check_safety(df, 0, len(df) - 1, verbose=2)
-    print(f"Number of safe reports = {nsafe_reports} (out of {nrows})")
+    # Count the number of safe rows (reports)
+    nsafe_reports = 0
+    # For each row in the data frame...
+    for k in range(df.shape[0]):  # shape is (1000, 8)
+        # Convert the row to a list (so that we can drop zeros at
+        # the end; np.ndarrays do no allow this)
+        row = list(df.iloc[k, ])
+        # As long as there are zeros at the end of the list,
+        # drop them.
+        while row[-1] == 0:
+            row = row[:-1]
+        # Now, check if the row/report is safe
+        if check_row_safety(row, k, verbose=1):
+            nsafe_reports += 1
+    print(f"Number of safe reports = {nsafe_reports} (out of {df.shape[0]})")
 
 
 def main():
     """main() - a redundant level of indirection..."""
-    day_2_part_2()
+    day_2_part_1()
 
 
 if __name__ == "__main__":
