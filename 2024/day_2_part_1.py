@@ -124,7 +124,7 @@ from day_1_part_1 import import_data  # , sort_data
 #     return nsafe, nrows
 
 
-def check_row_safety(row: np.ndarray, row_num: int, verbose=0) -> bool | None:
+def check_row_safety(row: np.ndarray, row_num: int = 0, verbose=0) -> bool | None:
     """
         Check a sequence of numbers for 'safety':
 
