@@ -92,8 +92,8 @@
 
 
 # pylint: disable=unused-import
-import numpy as np
-import pandas as pd
+# import numpy as np
+# import pandas as pd
 # pylint: enable=unused-import
 
 # pylint: disable=import-error
@@ -102,12 +102,56 @@ from day_2_part_1 import check_row_safety
 # pylint: enable=import-error
 
 
+def recheck_row(row, verbose=0) -> bool | None:
+    """
+        recheck_row()
+            Recheck a row by popping off one item at a time
+            and running the popped row through the row-checker.
+
+            Returns true if either the row is safe to begin with
+            or if it is safe with one item removed (stops checking
+            when the one item removed makes the row safe; there might
+            be other items which could be removed to make the row safe).
+    """
+    if not (now_safe := check_row_safety(row)):
+        for i, _ in enumerate(row):
+            # Make a copy so that we can check the row
+            # multiple times
+            temp_row = row.copy()
+            # Pop an item
+            removed_item = temp_row.pop(i)
+            if verbose > 1:
+                print(f"Item {i} popped from temp_row: {temp_row}")
+            # Test the row with the item removed
+            if now_safe := check_row_safety(temp_row):
+                if verbose > 1:
+                    print(f"original row: {temp_row}")
+                    print(f"popped row: {temp_row}")
+                    print()
+                if verbose > 0:
+                    print(f"safe with item {i} removed: {removed_item}: ")
+                # Break out of the for-loop if the modified row is safe
+                break
+        # If the row is unsafe no matter which item is removed,
+        # barf (if verbosity is high enough)
+        if not now_safe:
+            if verbose > 0:
+                print("not safe, no matter what")
+    else:
+        if verbose > 0:
+            print("already safe")
+    # Return True/False depending on if the row can be made
+    # safe or not.
+    return now_safe
+
+
 def day_2_part_2():
     """day_2_part_2()"""
     # Import data to dataframe
-    df = import_data(2, example=False)
+    df = import_data(2, example=True)
     # Count the number of safe rows (reports)
     nsafe_reports = 0
+    nsalvagable_reports = 0
     # For each row in the data frame...
     for k in range(df.shape[0]):  # shape is (1000, 8)
         # Convert the row to a list (so that we can drop zeros at
@@ -118,12 +162,18 @@ def day_2_part_2():
         while row[-1] == 0:
             row = row[:-1]
         # Now, check if the row/report is safe
-        if check_row_safety(row, k, verbose=1):
+        if check_row_safety(row, k, verbose=0):
             nsafe_reports += 1
-        else:  # Re-check with one item removed
-            pass
+        else:  # Re-check row with one item removed
+            if recheck_row(row):
+                # print(f"Row {k:003d} is salvagable: {row}")
+                nsalvagable_reports += 1
+            #else:
+            #    print(f"Row {k:003d} is NOT salvagable: {row}")
 
     print(f"Number of safe reports = {nsafe_reports} (out of {df.shape[0]})")
+    print(f"Number of salvagable reports = {nsalvagable_reports} (out of {df.shape[0]})")
+    print(f"Number of unsafe reports = {df.shape[0] - nsafe_reports} (out of {df.shape[0]})")
 
 
 def main():
