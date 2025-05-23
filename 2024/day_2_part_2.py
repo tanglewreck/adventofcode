@@ -77,10 +77,10 @@
     1 3 2 4 5: Safe by removing the second level, 3.
     8 6 4 4 1: Safe by removing the third level, 4.
     1 3 6 7 9: Safe without removing any level.
-    
+
     Thanks to the Problem Dampener, 4 reports are
     actually safe!
-    
+
     Update your analysis by handling situations where
     the Problem Dampener can remove a single level from
     unsafe reports. How many reports are now safe?
@@ -97,63 +97,9 @@ import pandas as pd
 # pylint: enable=unused-import
 
 # pylint: disable=import-error
-from day_1_part_1 import import_data  # , sort_data
+from day_1_part_1 import import_data
+from day_2_part_1 import check_row_safety
 # pylint: enable=import-error
-
-
-def check_row_safety(row: np.ndarray, row_num: int, verbose=0) -> bool | None:
-    """
-        Check a sequence of numbers for 'safety':
-
-        A sequence is considered safe if
-            1. the sequence is monotonically and strictly
-               increasing or decreasing (all differences
-               between successive elements have the same sign
-               and is not zero), and
-            2. the absolute value of the difference between any pair
-               of successive elements less than or equal to 3.
-
-        In other words, if a is a sequence (a zero-based array) of real
-        numbers of length n, i ∈ ℕ: i ∈ (0, n - 1), and 
-        d[i] = a[i] - a[i+1] is the difference between two successive
-        elements in that array, then , a is safe iff 
-            1. d[i] > 0 or diff[i] < 0, for all i ∈ (0, n - 1), and
-            2. abs(d[i]) <= 3 for all i ∈ (0, n - 1).
-
-    """
-    if len(row) <2:
-        return None
-    # Create two temp-arrays
-    tmparr1 = np.append([0], row)  # add zero at the start
-    tmparr2 = np.append(row, [0])  # add zero at the end
-    # Calculate the difference btw the temp-arrays;
-    # this gives us the differences between successive
-    # elements in the input array (the first and last
-    # diffs are discarded since we are only interested
-    # in the 'internal' differences between elements)
-    diffarr = tmparr2 - tmparr1
-    diffarr = diffarr[1:len(row)]  # Lose first and last elements
-    # Print diagnostics if verbose
-    if verbose > 1:
-        print("row:", row, f"({len(row)})")
-        print("tmparr1:", tmparr1, f"({len(tmparr1)})")
-        print("tmparr2:", tmparr2, f"({len(tmparr2)})")
-        print("diffarr:", diffarr, f"({len(diffarr)})")
-    if verbose > 0:
-        # A row is safe if all diffs have same sign, and  all diffs
-        # are less than or equal to 3:
-        safe = (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
-        if safe:
-            print(f"Row {row_num:003d} SAFE: {list(row)}")
-        # A row is not safe unless all diffs have the same sign
-        if not all(diffarr > 0) and not all(diffarr < 0):
-            print(f"Row {row_num:003d} NOT safe: SIGN change: {list(row)}")
-        # A row is not safe unless all diffs are less than or equal to 3
-        if not all(abs(diffarr) <= 3):
-            print(f"Row {row_num:003d} NOT safe: diff TOO LARGE: {list(row)}")
-    # Return true if all diffs have same sign, and  all diffs
-    # are less than or equal to 3:
-    return (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
 
 
 def day_2_part_2():
@@ -174,6 +120,9 @@ def day_2_part_2():
         # Now, check if the row/report is safe
         if check_row_safety(row, k, verbose=1):
             nsafe_reports += 1
+        else:  # Re-check with one item removed
+            pass
+
     print(f"Number of safe reports = {nsafe_reports} (out of {df.shape[0]})")
 
 
