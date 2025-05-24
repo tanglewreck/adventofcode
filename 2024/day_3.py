@@ -67,6 +67,15 @@
     Handle the new instructions; what do you get if you add up all of the results
     of just the enabled multiplications?
 
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    A: 113965544
+    - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    That's the right answer! You are one gold star closer to finding the Chief Historian.
+
+    You have completed Day 3!
+
+
 """
 
 
