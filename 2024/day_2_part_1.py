@@ -208,7 +208,7 @@ def day_2_part_1():
         while row[-1] == 0:
             row = row[:-1]
         # Now, check if the row/report is safe
-        if check_row_safety(row, k, verbose=1):
+        if check_row_safety(row, k, verbose=0):
             nsafe_reports += 1
     print(f"Number of safe reports = {nsafe_reports} (out of {df.shape[0]})")
 

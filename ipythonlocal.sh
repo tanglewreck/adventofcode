@@ -5,7 +5,7 @@ PROJDIR="$HOME/Proj/adventofcode"
 export IPYTHONDIR="$PROJDIR/.ipython"
 export PYLINTRC="$PROJDIR/pylintrc"
 if [ -d "$IPYTHONDIR" ]; then
-    ipython --profile=default --pylab
+    ipython --profile="$(hostname -s)" --pylab
 else
     echo "No .ipython dir found ($IPYTHONDIR): FAIL"
     exit 1
