@@ -101,7 +101,8 @@ def import_data(nday: int, example=False) -> pd.DataFrame | None:
               where n is an integer and the '_example' suffix
               is optional.
     """
-    fname = "day_" + str(nday) + "_data"
+    datadir = "data/"
+    fname = datadir + "day_" + str(nday) + "_data"
     if example:
         fname += "_example"
     try:
