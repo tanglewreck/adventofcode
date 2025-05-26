@@ -106,10 +106,11 @@ def get_token(data_string: str, index: int, length: int) -> str:
         return ""
 
 
-def import_data(path: str) -> Tuple[str, str]:
+def import_data(path: str, verbose: int = 0) -> Tuple[str, str]:
     """Read data from file"""
     try:
-        print(f"path = {path}")
+        if verbose > 0:
+            print(f"path = {path}")
         with open(path + "_example", encoding="utf-8") as fp:
             example_data = fp.read().strip()
         with open(path, encoding="utf-8") as fp:
