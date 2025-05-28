@@ -49,16 +49,16 @@
         -------------------
         0 1 2 3 4 5 6 7 8 9
         -------------------
-    0   . . . . X X M A S . 
-    1   . S A M X M S . . . 
-    2   . . . S . . A . . . 
-    3   . . A . A . M S . X 
-    4   X M A S A M X . M M 
-    5   X . . . . . X A . A 
-    6   S . S . S . S . S S 
-    7   . A . A . A . A . A 
-    8   . . M . M . M . M M 
-    9   . X . X . X M A S X 
+    0   . . . . X X M A S .
+    1   . S A M X M S . . .
+    2   . . . S . . A . . .
+    3   . . A . A . M S . X
+    4   X M A S A M X . M M
+    5   X . . . . . X A . A
+    6   S . S . S . S . S S
+    7   . A . A . A . A . A
+    8   . . M . M . M . M M
+    9   . X . X . X M A S X
 
     Take a look at the little Elf's word search.
     How many times does XMAS appear?
@@ -68,14 +68,21 @@
 """
 
 
-# pylint: disable=unused-import
-# import numpy as np
-# import pandas as pd
-import re
-from string import digits
-from typing import Callable, List, Optional, Tuple
-# pylint: enable=unused-import
+# xpylint: disable=too-many-locals
+# xpylint: disable=too-many-statements
+# xpylint: disable=unused-argument
+# xpylint: disable=unused-import
+# xpylint: disable=unused-variable
+# xpylint: disable=undefined-variable
 
+
+import re
+import typing
+from typing import Optional
+from typing import List
+from typing import Tuple
+import numpy as np
+import pandas as pd
 
 # TEST_DATA = """MMMSXXMASM
 # MSAMXMSMSA
@@ -89,23 +96,11 @@ from typing import Callable, List, Optional, Tuple
 # MXMXAXMASX
 # """
 
-
-def mul(x: int|float, y: int|float) -> int|float:
-    """Multiply two numbers"""
-    return x * y
+FULL_DATA_CSV = "data/day_4_data.csv"
+EXAMPLE_DATA_CSV = "data/day_4_data_example.csv"
 
 
-def get_token(data_string: str, index: int, length: int) -> str:
-    """
-        get_token()
-            Return a substring of length 'length' beginning at 'index'.
-    """
-    try:
-        return data_string[index : index + length]
-    except IndexError:
-        return ""
-
-
+@typing.no_type_check
 def import_data(path: str, verbose: int = 0) -> Tuple[str, str]:
     """Read data from file"""
     try:
@@ -114,7 +109,7 @@ def import_data(path: str, verbose: int = 0) -> Tuple[str, str]:
         with open(path + "_example", encoding="utf-8") as fp:
             example_data = fp.read().strip()
         with open(path, encoding="utf-8") as fp:
-            full_data= fp.read().strip()
+            full_data = fp.read().strip()
         return (example_data, full_data)
 # pylint: enable=unused-variable
     except OSError as exception:
@@ -122,110 +117,123 @@ def import_data(path: str, verbose: int = 0) -> Tuple[str, str]:
         raise SystemExit(1) from exception
 
 
-def parse_data(data, verbose=0):
+@typing.no_type_check
+def import_as_dataframe(path: str, verbose: int = 0) -> Optional[pd.DataFrame]:
+    """import and save as csv"""
+    outpath = path + ".csv"
+    if verbose > 0:
+        print(outpath)
+    try:
+        with open(path, encoding="utf-8") as fp:
+            rows = [re.split(r'', row.strip())[1:-1] for row in fp.readlines()]
+            if verbose:
+                print(f"rows: {rows}")
+            # rows = [",".join(
+            #    (re.split(r'', row.strip()))[1:-1]) + "\n"
+            #        for row in fp.readlines()
+            # ]
+            if verbose > 0:
+                print(f"Rows read: {rows}")
+            return pd.DataFrame(rows)
+            # with open(outpath, "w", encoding="utf-8") as fp_out:
+            #    fp_out.writelines(rows)
+            # return pd.DataFrame()
+    except OSError as exception:
+        print(repr(exception))
+        return None
+        # raise SystemExit(1) from exception
+    return None
+
+
+def diagonals(df_in: pd.DataFrame, verbose: int = 0) -> List[str]:
+    """Extract diagonals from a dataframe"""
+    # Convert to np.ndarray so that we can use
+    # np.diagonal() to extract diagonals (make
+    # a copy so the input dataframe is not affected).
+    df = np.asarray(df_in.copy())
+    # Flip data left-to-right, i.e. reverse/mirror rows
+    df_flipped = np.fliplr(df)
+    n = len(df)
+    diags: list = [df[row_col:n, :(n - row_col)].diagonal()
+                   for row_col in range(n)]
+    diags_flipped: list = [df_flipped[row_col:n, :(n - row_col)].diagonal()
+                           for row_col in range(n)]
+    if verbose > 1:
+        print(f"diagonals: {diags}")
+        print(f"diagonals (flipped df): {diags_flipped}")
+    return diags + diags_flipped
+
+
+# pylint: disable=too-many-locals
+def search_and_extract(df: pd.DataFrame, search_string: str,
+                       verbose: int = 0) -> int:
     """
-        parse_data()
-
+        Search for a string embedded in the row, columns, and diagonals
+        of a dataframe
     """
-    return data, verbose
+    # n_string_in_rows = [search_string in df[]]
+    regexp = re.compile(rf"{search_string}")
+    n = len(df)
+    n_matches = 0
+    # Search rows
+    n_row_matches = 0
+    for row in range(n):
+        row_str = "".join(df.iloc[row])
+        row_str_rev = "".join(df.iloc[row])[::-1]
+        n_row_matches += len(re.findall(regexp, row_str))
+        n_row_matches += len(re.findall(regexp, row_str_rev))
+    if verbose:
+        print(f"n_row_matches = {n_row_matches}")
+    n_matches += n_row_matches
+    # Search columns
+    n_col_matches = 0
+    for col in range(n):
+        col_str = "".join(df.iloc[:, col])
+        col_str_rev = "".join(df.iloc[:, col])[::-1]
+        n_col_matches += len(re.findall(regexp, col_str))
+        n_col_matches += len(re.findall(regexp, col_str_rev))
+    if verbose:
+        print(f"n_col_matches = {n_col_matches}")
+    n_matches += n_col_matches
+    # Search diagonals
+    n_diag_matches = 0
+    diags = diagonals(df)
+    for diag in diags:
+        diag_str = "".join(diag)
+        diag_str_rev = "".join(diag[::-1])
+        if verbose > 1:
+            print(f"diag_str = {diag_str}")
+            print(f"diag_str_rev = {diag_str_rev}")
+        n_diag_matches += len(re.findall(regexp, diag_str))
+        n_diag_matches += len(re.findall(regexp, diag_str_rev))
+    if verbose:
+        print(f"n_diag_matches = {n_diag_matches}")
+    n_matches += n_diag_matches
+    # Print diagnostics if verbose enogugh
+    if verbose > 1:
+        print(f"Diagonals = {diags}")
+    if verbose > 1:
+        print(n_matches)
+    # Return number of matches
+    return n_matches
 
 
-def main() -> None:
-    """main()"""
-# pylint: disable=unused-variable
+def main(verbose=0):
+    """main"""
     # Import data
-    fdata = "data/day_4_data"
-    fdata_example = "data/day_4_data_example"
-    example_data, full_data = import_data(fdata)
-
-    print(full_data)
-    print()
-    print(example_data)
-
-    # Get tokens
-    tokens = parse_data(example_data, verbose=0)
-    ntokens = len(tokens)
-    # pylint: disable=eval-used
-    print(f"Number of tokens = {ntokens}")
-    print()
+    # example_data, full_data = import_data("../data/day_4_data")
+    df_example = import_as_dataframe("data/day_4_data_example")
+    if verbose > 0:
+        print(df_example)
+        print()
+    df_full = import_as_dataframe("data/day_4_data")
+    # Search for target string and print results
+    target_string = 'XMAS'
+    print("Number of matches (example data))= "
+          f"{search_and_extract(df_example, target_string, verbose=1)}")
+    print("Number of matches (full data))= "
+          f"{search_and_extract(df_full, target_string, verbose=1)}")
 
 
 if __name__ == "__main__":
-    main()
-#
-#
-# pylint: disable=too-many-branches
-# def parse_data(data: str = TEST_DATA, do_dont: bool = False,
-#                verbose: int = 0) -> list:
-#     """
-#         parse_data()
-#             Extracts valid tokens (substrings of the form 'mul(x,y)', where x and y
-#             are integers) from a string.
-#
-#             Returns a list of token-strings.
-#     """
-#     valid_tokens = []  # A list that will hold valid tokens ('mul(x,y)'-substrings)
-#     valid = True  # Indicator that a token is (still) valid
-#     eof = False  # flag that indicates whether we have reached end-of-file (end-of-data)
-#     index = 0  # index into to the data
-#     # do_token_length = 4  # length of a 'do()' token
-#     # dont_token_length = 7  # length of a "don't()" token
-#     do = True
-#     while valid and not eof:
-#         try:
-#             # Check for 'do()' and "don't()"tokens
-#             if get_token(data, index, 4) == "do()":
-#                 if verbose > 0:
-#                     print("found a 'do()' token")
-#                 do = True
-#             if get_token(data, index, 7) == "don't()":
-#                 if verbose > 0:
-#                     print("found a 'don't()' token")
-#                 do = False
-#             # Set token-length
-#             token_length = 4
-#             # Check that we do not go beoynd the length of the data
-#             if index + token_length > len(data):
-#                 eof = True
-#                 continue
-#             # Get next token
-#             token = get_token(data, index, token_length)
-#             # If token does not match the beginning of a 'mul(x,y)' operation
-#             # move one step forward and start the while-loop over
-#             if token != "mul(":
-#                 index += 1
-#                 continue
-#             # Increase token-length by 1
-#             token_length += 1
-#             # Loop while the token ends in a digit
-#             while get_token(data, index, token_length)[-1] in digits:
-#                 token = get_token(data, index, token_length)
-#                 token_length += 1
-#             # If the token now ends with a ",", update the token
-#             # and investigate further
-#             if get_token(data, index, token_length)[-1] == ",":
-#                 token = get_token(data, index, token_length)
-#                 token_length += 1
-#                 # Again, if the token ends with a digit, increase token-length
-#                 # by one, update the token, and and repeat until the token
-#                 # does not end with a digit
-#                 while get_token(data, index, token_length)[-1] in digits:
-#                     token = get_token(data, index, token_length)
-#                     token_length += 1
-#                 # Token now ends with a non-digit. If it ends with a ")",
-#                 # we have found a valid token, so we add it to the list of
-#                 # valid tokens, but only if the lastest do()/don't() token
-#                 # was a 'do()'.
-#                 if get_token(data, index, token_length)[-1] == ")":
-#                     token = get_token(data, index, token_length)
-#                     if do or not do_dont:
-#                         valid_tokens.append(token)
-#                     token_length += 1
-#                     if verbose > 0:
-#                         print(token)
-#             index += len(token)
-#         except IndexError:
-#             pass
-#     if verbose > 0:
-#         print(valid_tokens)
-#     return valid_tokens
+    main(verbose=0)
