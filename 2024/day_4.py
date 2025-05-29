@@ -117,12 +117,11 @@ def import_data(path: str, verbose: int = 0) -> Tuple[str, str]:
         raise SystemExit(1) from exception
 
 
-@typing.no_type_check
-def import_as_dataframe(path: str, verbose: int = 0) -> Optional[pd.DataFrame]:
+# @typing.no_type_check
+def import_as_dataframe(path: str,
+                        save: bool = False,
+                        verbose: int = 0) -> Optional[pd.DataFrame]:
     """import and save as csv"""
-    outpath = path + ".csv"
-    if verbose > 0:
-        print(outpath)
     try:
         with open(path, encoding="utf-8") as fp:
             rows = [re.split(r'', row.strip())[1:-1] for row in fp.readlines()]
@@ -134,14 +133,17 @@ def import_as_dataframe(path: str, verbose: int = 0) -> Optional[pd.DataFrame]:
             # ]
             if verbose > 0:
                 print(f"Rows read: {rows}")
+            # Save to file if asked to
+            if save:
+                outpath = path + ".csv"
+                if verbose > 0:
+                    print(f"saving data from {path} to csv-file {outpath}")
+                with open(outpath, "w", encoding="utf-8") as fp_out:
+                    fp_out.writelines(rows)
             return pd.DataFrame(rows)
-            # with open(outpath, "w", encoding="utf-8") as fp_out:
-            #    fp_out.writelines(rows)
-            # return pd.DataFrame()
     except OSError as exception:
         print(repr(exception))
         return None
-        # raise SystemExit(1) from exception
     return None
 
 
