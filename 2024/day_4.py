@@ -139,6 +139,7 @@ def import_as_dataframe(path: str,
                 if verbose > 0:
                     print(f"saving data from {path} to csv-file {outpath}")
                 with open(outpath, "w", encoding="utf-8") as fp_out:
+                    rows = [re.split(r'', row.strip())[1:-1] for row in fp.readlines()]
                     fp_out.writelines(rows)
             return pd.DataFrame(rows)
     except OSError as exception:
@@ -199,7 +200,10 @@ def search_and_extract(df: pd.DataFrame, search_string: str,
     n_matches += n_col_matches
     # Search diagonals
     n_diag_matches = 0
-    diags = diagonals(df)
+    # pylint: disable=import-outside-toplevel
+    from snippets.day_4_4_diags import extract_diagonals
+    # diags = diagonals(df)
+    diags = extract_diagonals(df)
     for diag in diags:
         diag_str = "".join(diag)
         diag_str_rev = "".join(diag[::-1])
