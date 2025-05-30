@@ -42,6 +42,17 @@
     MAMMMXMMMM
     MXMXAXMASX
 
+    M  M  M  S  X  X  M  A  S  M
+    M  S  A  M  X  M  S  M  S  A
+    A  M  X  S  X  M  A  A  M  M
+    M  S  A  M  A  S  M  S  M  X
+    X  M  A  S  A  M  X  A  M  M
+    X  X  A  M  M  X  X  A  M  A
+    S  M  S  M  S  A  S  X  S  S
+    S  A  X  A  M  A  S  A  A  A
+    M  A  M  M  M  X  M  M  M  M
+    M  X  M  X  A  X  M  A  S  X
+
     In this word search, XMAS occurs a total of 18 times; here's the
     same word search again, but where letters not involved in any XMAS
     have been replaced with .:
@@ -63,110 +74,33 @@
     Take a look at the little Elf's word search.
     How many times does XMAS appear?
 
-
-
 """
-
-
 # xpylint: disable=too-many-locals
 # xpylint: disable=too-many-statements
 # xpylint: disable=unused-argument
 # xpylint: disable=unused-import
-# xpylint: disable=unused-variable
+# pylint: disable=unused-variable
 # xpylint: disable=undefined-variable
 
-
 import re
-import typing
-from typing import Optional
-from typing import List
-from typing import Tuple
-import numpy as np
+import typing  # pylint: disable=unused-import
+from typing import Optional  # pylint: disable=unused-import
+from typing import List  # pylint: disable=unused-import
+from typing import Tuple  # pylint: disable=unused-import
+import numpy as np  # pylint: disable=unused-import
 import pandas as pd
 
-# TEST_DATA = """MMMSXXMASM
-# MSAMXMSMSA
-# AMXSXMAAMM
-# MSAMASMSMX
-# XMASAMXAMM
-# XXAMMXXAMA
-# SMSMSASXSS
-# SAXAMASAAA
-# MAMMMXMMMM
-# MXMXAXMASX
-# """
+from snippets.import_as_dataframe import import_as_dataframe
+from snippets.day_4_4_diags import extract_diagonals
 
+FULL_DATA = "data/day_4_data"
 FULL_DATA_CSV = "data/day_4_data.csv"
+EXAMPLE_DATA = "data/day_4_data_example"
 EXAMPLE_DATA_CSV = "data/day_4_data_example.csv"
 
 
-@typing.no_type_check
-def import_data(path: str, verbose: int = 0) -> Tuple[str, str]:
-    """Read data from file"""
-    try:
-        if verbose > 0:
-            print(f"path = {path}")
-        with open(path + "_example", encoding="utf-8") as fp:
-            example_data = fp.read().strip()
-        with open(path, encoding="utf-8") as fp:
-            full_data = fp.read().strip()
-        return (example_data, full_data)
-# pylint: enable=unused-variable
-    except OSError as exception:
-        print(repr(exception))
-        raise SystemExit(1) from exception
-
-
-# @typing.no_type_check
-def import_as_dataframe(path: str,
-                        save: bool = False,
-                        verbose: int = 0) -> Optional[pd.DataFrame]:
-    """import and save as csv"""
-    try:
-        with open(path, encoding="utf-8") as fp:
-            rows = [re.split(r'', row.strip())[1:-1] for row in fp.readlines()]
-            if verbose:
-                print(f"rows: {rows}")
-            # rows = [",".join(
-            #    (re.split(r'', row.strip()))[1:-1]) + "\n"
-            #        for row in fp.readlines()
-            # ]
-            if verbose > 0:
-                print(f"Rows read: {rows}")
-            # Save to file if asked to
-            if save:
-                outpath = path + ".csv"
-                if verbose > 0:
-                    print(f"saving data from {path} to csv-file {outpath}")
-                with open(outpath, "w", encoding="utf-8") as fp_out:
-                    rows = [re.split(r'', row.strip())[1:-1] for row in fp.readlines()]
-                    fp_out.writelines(rows)
-            return pd.DataFrame(rows)
-    except OSError as exception:
-        print(repr(exception))
-        return None
-    return None
-
-
-def diagonals(df_in: pd.DataFrame, verbose: int = 0) -> List[str]:
-    """Extract diagonals from a dataframe"""
-    # Convert to np.ndarray so that we can use
-    # np.diagonal() to extract diagonals (make
-    # a copy so the input dataframe is not affected).
-    df = np.asarray(df_in.copy())
-    # Flip data left-to-right, i.e. reverse/mirror rows
-    df_flipped = np.fliplr(df)
-    n = len(df)
-    diags: list = [df[row_col:n, :(n - row_col)].diagonal()
-                   for row_col in range(n)]
-    diags_flipped: list = [df_flipped[row_col:n, :(n - row_col)].diagonal()
-                           for row_col in range(n)]
-    if verbose > 1:
-        print(f"diagonals: {diags}")
-        print(f"diagonals (flipped df): {diags_flipped}")
-    return diags + diags_flipped
-
-
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 # pylint: disable=too-many-locals
 def search_and_extract(df: pd.DataFrame, search_string: str,
                        verbose: int = 0) -> int:
@@ -174,8 +108,10 @@ def search_and_extract(df: pd.DataFrame, search_string: str,
         Search for a string embedded in the row, columns, and diagonals
         of a dataframe
     """
+    search_string_rev = search_string[::-1]
     # n_string_in_rows = [search_string in df[]]
     regexp = re.compile(rf"{search_string}")
+    regexp_rev = re.compile(rf"{search_string_rev}")
     n = len(df)
     n_matches = 0
     # Search rows
@@ -184,7 +120,7 @@ def search_and_extract(df: pd.DataFrame, search_string: str,
         row_str = "".join(df.iloc[row])
         row_str_rev = "".join(df.iloc[row])[::-1]
         n_row_matches += len(re.findall(regexp, row_str))
-        n_row_matches += len(re.findall(regexp, row_str_rev))
+        n_row_matches += len(re.findall(regexp_rev, row_str))
     if verbose:
         print(f"n_row_matches = {n_row_matches}")
     n_matches += n_row_matches
@@ -193,6 +129,14 @@ def search_and_extract(df: pd.DataFrame, search_string: str,
     for col in range(n):
         col_str = "".join(df.iloc[:, col])
         col_str_rev = "".join(df.iloc[:, col])[::-1]
+        matches = re.findall(regexp, col_str)
+        matches_rev = re.findall(regexp_rev, col_str)
+        if matches and verbose:
+            print(f"column {col}: ", end="")
+            print(matches)
+        if matches_rev and verbose:
+            print(f"column {col}: ", end="")
+            print(matches_rev)
         n_col_matches += len(re.findall(regexp, col_str))
         n_col_matches += len(re.findall(regexp, col_str_rev))
     if verbose:
@@ -200,16 +144,22 @@ def search_and_extract(df: pd.DataFrame, search_string: str,
     n_matches += n_col_matches
     # Search diagonals
     n_diag_matches = 0
-    # pylint: disable=import-outside-toplevel
-    from snippets.day_4_4_diags import extract_diagonals
     # diags = diagonals(df)
     diags = extract_diagonals(df)
-    for diag in diags:
+    for k, diag in enumerate(diags):
         diag_str = "".join(diag)
         diag_str_rev = "".join(diag[::-1])
         if verbose > 1:
             print(f"diag_str = {diag_str}")
             print(f"diag_str_rev = {diag_str_rev}")
+        matches = re.findall(regexp, diag_str)
+        matches_rev = re.findall(regexp_rev, diag_str)
+        if matches and verbose:
+            print(f"diag {k}: {diag}: ", end="")
+            print(matches)
+        if matches_rev and verbose:
+            print(f"diag {k}: {diag}: ", end="")
+            print(matches_rev)
         n_diag_matches += len(re.findall(regexp, diag_str))
         n_diag_matches += len(re.findall(regexp, diag_str_rev))
     if verbose:
@@ -224,22 +174,29 @@ def search_and_extract(df: pd.DataFrame, search_string: str,
     return n_matches
 
 
+# pylint: disable=unused-variable
 def main(verbose=0):
     """main"""
     # Import data
     # example_data, full_data = import_data("../data/day_4_data")
-    df_example = import_as_dataframe("data/day_4_data_example")
+    df_example = import_as_dataframe("data/day_4_data_example_3", save=True)
     if verbose > 0:
         print(df_example)
         print()
-    df_full = import_as_dataframe("data/day_4_data")
+    df_full = import_as_dataframe("data/day_4_data_2", save=True)
     # Search for target string and print results
     target_string = 'XMAS'
-    print("Number of matches (example data))= "
-          f"{search_and_extract(df_example, target_string, verbose=1)}")
-    print("Number of matches (full data))= "
-          f"{search_and_extract(df_full, target_string, verbose=1)}")
+    print("Number of matches (example data)= "
+          f"{search_and_extract(df_example, target_string, verbose=0)}")
+    print("Number of matches (full data)= "
+          f"{search_and_extract(df_full, target_string, verbose=0)}")
+    df_full = pd.read_csv("data/day_4_data_2.csv", header=None)
+    df_example = pd.read_csv("data/day_4_data_example_3.csv", header=None)
+    print("Number of matches (example data)= "
+          f"{search_and_extract(df_example, target_string, verbose=0)}")
+    print("Number of matches (full data)= "
+          f"{search_and_extract(df_full, target_string, verbose=0)}")
 
 
 if __name__ == "__main__":
-    main(verbose=0)
+    main()
