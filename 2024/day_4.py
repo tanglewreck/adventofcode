@@ -82,121 +82,47 @@
 # pylint: disable=unused-variable
 # xpylint: disable=undefined-variable
 
-import re
-import typing  # pylint: disable=unused-import
-from typing import Optional  # pylint: disable=unused-import
-from typing import List  # pylint: disable=unused-import
-from typing import Tuple  # pylint: disable=unused-import
-import numpy as np  # pylint: disable=unused-import
-import pandas as pd
-
-from snippets.import_as_dataframe import import_as_dataframe
-from snippets.day_4_4_diags import extract_diagonals
-
-FULL_DATA = "data/day_4_data"
-FULL_DATA_CSV = "data/day_4_data.csv"
-EXAMPLE_DATA = "data/day_4_data_example"
-EXAMPLE_DATA_CSV = "data/day_4_data_example.csv"
+import os
+import sys
+# import typing  # pylint: disable=unused-import
+# from typing import Optional  # pylint: disable=unused-import
+# from typing import List  # pylint: disable=unused-import
+# from typing import Tuple  # pylint: disable=unused-import
 
 
-# pylint: disable=too-many-branches
-# pylint: disable=too-many-statements
-# pylint: disable=too-many-locals
-def search_and_extract(df: pd.DataFrame, search_string: str,
-                       verbose: int = 0) -> int:
-    """
-        Search for a string embedded in the row, columns, and diagonals
-        of a dataframe
-    """
-    search_string_rev = search_string[::-1]
-    # n_string_in_rows = [search_string in df[]]
-    regexp = re.compile(rf"{search_string}")
-    regexp_rev = re.compile(rf"{search_string_rev}")
-    n = len(df)
-    n_matches = 0
-    # Search rows
-    n_row_matches = 0
-    for row in range(n):
-        row_str = "".join(df.iloc[row])
-        row_str_rev = "".join(df.iloc[row])[::-1]
-        n_row_matches += len(re.findall(regexp, row_str))
-        n_row_matches += len(re.findall(regexp_rev, row_str))
-    if verbose:
-        print(f"n_row_matches = {n_row_matches}")
-    n_matches += n_row_matches
-    # Search columns
-    n_col_matches = 0
-    for col in range(n):
-        col_str = "".join(df.iloc[:, col])
-        col_str_rev = "".join(df.iloc[:, col])[::-1]
-        matches = re.findall(regexp, col_str)
-        matches_rev = re.findall(regexp_rev, col_str)
-        if matches and verbose:
-            print(f"column {col}: ", end="")
-            print(matches)
-        if matches_rev and verbose:
-            print(f"column {col}: ", end="")
-            print(matches_rev)
-        n_col_matches += len(re.findall(regexp, col_str))
-        n_col_matches += len(re.findall(regexp, col_str_rev))
-    if verbose:
-        print(f"n_col_matches = {n_col_matches}")
-    n_matches += n_col_matches
-    # Search diagonals
-    n_diag_matches = 0
-    # diags = diagonals(df)
-    diags = extract_diagonals(df)
-    for k, diag in enumerate(diags):
-        diag_str = "".join(diag)
-        diag_str_rev = "".join(diag[::-1])
-        if verbose > 1:
-            print(f"diag_str = {diag_str}")
-            print(f"diag_str_rev = {diag_str_rev}")
-        matches = re.findall(regexp, diag_str)
-        matches_rev = re.findall(regexp_rev, diag_str)
-        if matches and verbose:
-            print(f"diag {k}: {diag}: ", end="")
-            print(matches)
-        if matches_rev and verbose:
-            print(f"diag {k}: {diag}: ", end="")
-            print(matches_rev)
-        n_diag_matches += len(re.findall(regexp, diag_str))
-        n_diag_matches += len(re.findall(regexp, diag_str_rev))
-    if verbose:
-        print(f"n_diag_matches = {n_diag_matches}")
-    n_matches += n_diag_matches
-    # Print diagnostics if verbose enogugh
-    if verbose > 1:
-        print(f"Diagonals = {diags}")
-    if verbose > 1:
-        print(n_matches)
-    # Return number of matches
-    return n_matches
+# xpylint: xdisable=import-error
+from helpers.import_as_dataframe import import_as_dataframe
+import helpers.day_4_count_matches
+# pylint: enable=import-error
 
+# Constants
+__NAME__ = "day_4"  # this is us
+__BASEDIR__ = f"{os.environ['HOME']}/Proj/adventofcode/2024"
+__DATADIR__ = f"{__BASEDIR__}/data"  # data directory path
 
-# pylint: disable=unused-variable
-def main(verbose=0):
+SEARCH_STRING = "XMAS"
+
+def main(data_file: str, verbose=0):
     """main"""
     # Import data
-    # example_data, full_data = import_data("../data/day_4_data")
-    df_example = import_as_dataframe("data/day_4_data_example_3", save=True)
-    if verbose > 0:
-        print(df_example)
-        print()
-    df_full = import_as_dataframe("data/day_4_data_2", save=True)
+    df = import_as_dataframe(data_file)
     # Search for target string and print results
-    target_string = 'XMAS'
-    print("Number of matches (example data)= "
-          f"{search_and_extract(df_example, target_string, verbose=0)}")
-    print("Number of matches (full data)= "
-          f"{search_and_extract(df_full, target_string, verbose=0)}")
-    df_full = pd.read_csv("data/day_4_data_2.csv", header=None)
-    df_example = pd.read_csv("data/day_4_data_example_3.csv", header=None)
-    print("Number of matches (example data)= "
-          f"{search_and_extract(df_example, target_string, verbose=0)}")
-    print("Number of matches (full data)= "
-          f"{search_and_extract(df_full, target_string, verbose=0)}")
+    n_matches = helpers.day_4_count_matches.count_matches(df, SEARCH_STRING, verbose=1)
+    print(f"Number of matches = {n_matches}")
 
 
+# pylint: disable=invalid-name
 if __name__ == "__main__":
-    main()
+    # Default data input
+    input_file = f"{__DATADIR__}/{ __NAME__}_data_example"
+    # Check for a commandline argument and use that as
+    # the path to the file containing the input data
+    try:
+        input_file = sys.argv[1]
+        if not os.access(input_file, os.R_OK):
+            raise OSError
+    except OSError as exception:
+        raise SystemExit("No such file") from exception
+    except IndexError:
+        pass
+    main(data_file=input_file)
