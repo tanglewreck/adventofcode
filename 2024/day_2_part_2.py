@@ -85,18 +85,14 @@
     the Problem Dampener can remove a single level from
     unsafe reports. How many reports are now safe?
 
-    ------------------------------------------------------------
+    --> 349 <--
 
-    ------------------------------------------------------------
+    That's the right answer! You are one gold star closer
+    to finding the Chief Historian.
+
+
 """
 
-
-# pylint: disable=unused-import
-# import numpy as np
-# import pandas as pd
-# pylint: enable=unused-import
-
-# pylint: disable=import-error
 from day_1_part_1 import import_data
 from day_2_part_1 import check_row_safety
 # pylint: enable=import-error
@@ -150,8 +146,8 @@ def day_2_part_2():
     # Import data to dataframe
     df = import_data(2, example=False)
     # Count the number of safe rows (reports)
-    nsafe_reports = 0
-    nsalvagable_reports = 0
+    n_safe_reports = 0
+    n_salvagable_reports = 0
     # For each row in the data frame...
     for k in range(df.shape[0]):  # shape is (1000, 8)
         # Convert the row to a list (so that we can drop zeros at
@@ -163,17 +159,20 @@ def day_2_part_2():
             row = row[:-1]
         # Now, check if the row/report is safe
         if check_row_safety(row, k, verbose=0):
-            nsafe_reports += 1
+            n_safe_reports += 1
         else:  # Re-check row with one item removed
             if recheck_row(row):
                 # print(f"Row {k:003d} is salvagable: {row}")
-                nsalvagable_reports += 1
-            #else:
-            #    print(f"Row {k:003d} is NOT salvagable: {row}")
-
-    print(f"Number of safe reports = {nsafe_reports} (out of {df.shape[0]})")
-    print(f"Number of salvagable reports = {nsalvagable_reports} (out of {df.shape[0]})")
-    print(f"Number of unsafe reports = {df.shape[0] - nsafe_reports} (out of {df.shape[0]})")
+                n_salvagable_reports += 1
+    print("Number of originally safe reports = "
+          f"{n_safe_reports}")
+    print("Number of salvagable reports = "
+          f"{n_salvagable_reports}")
+    print("Number of safe reports (total) = "
+          f"{n_safe_reports + n_salvagable_reports}")
+    print("Number of unsafe reports = "
+          f"{df.shape[0] - n_salvagable_reports - n_safe_reports}"
+          f"(out of {df.shape[0]})")
 
 
 def main():
