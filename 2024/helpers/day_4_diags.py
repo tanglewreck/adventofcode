@@ -9,24 +9,16 @@ __all__ = ["lower_left_diagonals",
            "lower_right_diagonals",
            "upper_left_diagonals",
            "upper_right_diagonals",
-           "extract_diagonals",
-           "DF", "N"]
+           "extract_diagonals"]
 __author__ = "mier"
 __version__ = "0.4.42"
 
 
 # pylint: disable=unused-import
 from typing import Any, Optional, TYPE_CHECKING
+# pylint: enable=unused-import
 import numpy as np
 import pandas as pd
-# pylint: enable=unused-import
-from . import __DATADIR__
-
-try:
-    DF = pd.read_csv(f"{__DATADIR__}/day_4_data_example.csv", header=None)
-    N = len(DF)
-except pd.errors.EmptyDataError as exception:
-    print(f"WARNING: {repr(exception)}")
 
 
 def lower_left_diagonals(df: pd.DataFrame | None = None,
