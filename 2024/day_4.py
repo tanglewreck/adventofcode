@@ -91,21 +91,20 @@ import sys
 
 
 # xpylint: xdisable=import-error
+from helpers import __DATADIR__
 from helpers.import_as_dataframe import import_as_dataframe
 import helpers.day_4_count_matches
 # pylint: enable=import-error
 
 # Constants
 __NAME__ = "day_4"  # this is us
-__BASEDIR__ = f"{os.environ['HOME']}/Proj/adventofcode/2024"
-__DATADIR__ = f"{__BASEDIR__}/data"  # data directory path
+# SEARCH_STRING = "XMAS"
+SEARCH_STRING = "xmas"
 
-SEARCH_STRING = "XMAS"
-
-def main(data_file: str, verbose=0):
+def main(data_file: str):
     """main"""
     # Import data
-    df = import_as_dataframe(data_file)
+    df = import_as_dataframe(data_file, save=False)
     # Search for target string and print results
     n_matches = helpers.day_4_count_matches.count_matches(df, SEARCH_STRING, verbose=1)
     print(f"Number of matches = {n_matches}")
