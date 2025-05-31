@@ -2,14 +2,20 @@
 # coding: utf-8
 import pandas as pd
 import numpy as np
-# from .. helpers import __DATADIR__
+from . import __DATADIR__
+
+DF4E = pd.read_csv(f"{__DATADIR__}/day_4_part_2_data_example.csv", header=None)
+DF4F = pd.read_csv(f"{__DATADIR__}/day_4_data.csv", header=None)
 
 
-def main():
-    df4e = pd.read_csv("data/day_4_part_2_data_example.csv", header=None)
-    df4f = pd.read_csv("data/day_4_data.csv", header=None)
-    df = df4e
-    df = df4f
+def x_mas_pd(example=False):
+    """
+        Find X-MAS patterns, pandas version
+    """
+    if example:
+        df = DF4E
+    else:
+        df = DF4F
     n = len(df)
     count = 0
     for row in range(n):
@@ -32,12 +38,18 @@ def main():
                         count += 1
                 except IndexError as e:
                     pass
-    print(f"count = {count}")
+    return count
 
-    rows_full = np.asarray(df4f)
-    rows_example = np.asarray(df4e)
-    rows = rows_example
-    rows = rows_full
+
+def x_mas_np(example=False):
+    """
+        Find X-MAS patterns, numpy version
+    """
+    if example:
+        df = DF4E
+    else:
+        df = DF4F
+    rows = np.asarray(df)
     n = len(rows)
     count = 0
     for row in range(n):
@@ -49,20 +61,26 @@ def main():
                     (rows[row+1][col-1] == 'S' and rows[row+1][col+1] == 'S')):
                     count += 1
                 if ((rows[row-1][col-1] == 'M' and rows[row-1][col+1] == 'S') and
-                    (rows[row+1][col-1] == 'M' and rows[row+1][col+1] == 'S')):            
-                    count += 1 
+                    (rows[row+1][col-1] == 'M' and rows[row+1][col+1] == 'S')):
+                    count += 1
                 if ((rows[row-1][col-1] == 'S' and rows[row-1][col+1] == 'M') and
                     (rows[row+1][col-1] == 'S' and rows[row+1][col+1] == 'M')):
                     count += 1
-                if ((rows[row-1][col-1] == 'S' and rows[row-1][col+1] == 'S') and            
+                if ((rows[row-1][col-1] == 'S' and rows[row-1][col+1] == 'S') and
                     (rows[row+1][col-1] == 'M' and rows[row+1][col+1] == 'M')):
-                    count += 1            
-    print(f"count = {count}")
+                    count += 1
+    return count
 
-    rows_full = [list(row) for row in np.asarray(df4f)]
-    rows_example = [list(row) for row in np.asarray(df4e)]
-    rows = rows_example
-    rows = rows_full
+
+def x_mas_list(example=False):
+    """
+        Find X-MAS patterns, list version
+    """
+    if example:
+        df = DF4E
+    else:
+        df = DF4F
+    rows = [list(row) for row in np.asarray(df)]
     n = len(rows)
     count = 0
     for row in range(1, n-1):
@@ -72,15 +90,12 @@ def main():
                     (rows[row+1][col-1] == 'S' and rows[row+1][col+1] == 'S')):
                     count += 1
                 if ((rows[row-1][col-1] == 'M' and rows[row-1][col+1] == 'S') and
-                    (rows[row+1][col-1] == 'M' and rows[row+1][col+1] == 'S')):            
-                    count += 1 
+                    (rows[row+1][col-1] == 'M' and rows[row+1][col+1] == 'S')):
+                    count += 1
                 if ((rows[row-1][col-1] == 'S' and rows[row-1][col+1] == 'M') and
                     (rows[row+1][col-1] == 'S' and rows[row+1][col+1] == 'M')):
                     count += 1
-                if ((rows[row-1][col-1] == 'S' and rows[row-1][col+1] == 'S') and            
+                if ((rows[row-1][col-1] == 'S' and rows[row-1][col+1] == 'S') and
                     (rows[row+1][col-1] == 'M' and rows[row+1][col+1] == 'M')):
-                    count += 1            
-    print(f"count = {count}")
-
-if __name__ == "__main__":
-    main()
+                    count += 1
+    return count

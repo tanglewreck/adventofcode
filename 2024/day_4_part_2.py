@@ -113,37 +113,43 @@
     Flip the word search from the instructions back over to the word search
     side and try again. How many times does an X-MAS appear?
 
+        2003
+
+    That's the right answer! You are one gold star closer to finding the Chief
+    Historian.
+
 
 """
-import os
-import sys
-from helpers import __DATADIR__
-from helpers.import_as_dataframe import import_as_dataframe
-from helpers.day_4_count_matches import count_matches
+# import os
+# import sys
+# from helpers import __DATADIR__
+# from helpers.import_as_dataframe import import_as_dataframe
+from helpers.day_4_pt2 import x_mas_list, x_mas_pd, x_mas_np
 
 # Constants
-__NAME__ = "day_4"  # this is us
-SEARCH_STRING = "xmas"
+# __NAME__ = "day_4"  # this is us
+
 
 def main():
     """main"""
     # Default data input
-    input_file = f"{__DATADIR__}/{ __NAME__}_data_example"
+    # input_file = f"{__DATADIR__}/{__NAME__}_data"
     # Check for a commandline argument and use that as
     # the path to the file containing the input data
-    try:
-        input_file = sys.argv[1]
-        if not os.access(input_file, os.R_OK):
-            raise OSError
-    except OSError as exception:
-        raise SystemExit("No such file") from exception
-    except IndexError:
-        pass
+    # try:
+    #    input_file = sys.argv[1]
+    #    if not os.access(input_file, os.R_OK):
+    #        raise OSError
+    # except OSError as exception:
+    #    raise SystemExit("No such file") from exception
+    # except IndexError:
+    #    pass
     # Import data
-    df = import_as_dataframe(input_file, save=False)
+    # df = import_as_dataframe(input_file, save=False)
     # Search for target string and print results
-    n_matches = count_matches(df, SEARCH_STRING, verbose=1)
-    print(f"Number of matches = {n_matches}")
+    print(x_mas_list())
+    print(x_mas_np())
+    print(x_mas_pd())
 
 
 if __name__ == "__main__":

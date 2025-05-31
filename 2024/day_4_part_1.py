@@ -125,10 +125,11 @@ from helpers.day_4_count_matches import count_matches
 __NAME__ = "day_4"  # this is us
 SEARCH_STRING = "xmas"
 
+
 def main():
     """main"""
     # Default data input
-    input_file = f"{__DATADIR__}/{ __NAME__}_data_example"
+    input_file = f"{__DATADIR__}/{__NAME__}_data_example"
     # Check for a commandline argument and use that as
     # the path to the file containing the input data
     try:
