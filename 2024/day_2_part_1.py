@@ -61,70 +61,17 @@
 
 # pylint: disable=unused-import
 import numpy as np
-import pandas as pd
+# import pandas as pd
 # pylint: enable=unused-import
 
 # pylint: disable=import-error
 from day_1_part_1 import import_data  # , sort_data
 # pylint: enable=import-error
 
-# - - - - - - -
-# OLD VERSION
-# - - - - - - -
-# pylint: disable=too-many-branches
-# def check_row_safety(df, begin: int = 0, end: int|None = None, verbose=0) -> bool:
-#     """evaluate report-safety"""
-#     # Sanity checks
-#     if not end:
-#         end = len(df) - 1
-#     assert begin < end
-#     assert begin >= 0 and end < len(df)
-#     # Initialise counter
-#     nsafe = 0
-#     nrows = 0
-#     for i in range(begin, end + 1):
-#         is_safe = True
-#         nrows += 1
-#         row = np.asarray(df.iloc[i, ])
-#         lastdiff = row[1] - row[0]
-#         if abs(lastdiff) < 1 or abs(lastdiff) > 3:
-#             if verbose > 1:
-#                 print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
-#                 print(f"(diff = {lastdiff}, j=0): ", end="")
-#                 print(f"Row = {row}")
-#             is_safe = False
-#             continue
-#         for j in range(1, len(row) - 1):
-#             if row[j] == 0 or row[j + 1] == 0:
-#                 break
-#             diff = row[j+1] - row[j]
-#             if lastdiff * diff <= 0:
-#                 if verbose > 1:
-#                     if lastdiff * diff < 0:
-#                         print(f"Row {i:003d} NOT safe: SIGN change: ", end="")
-#                     else:  # verbosity >= 2
-#                         print(f"Row {i:003d} NOT safe: NO change: ", end="")
-#                     print(f"({lastdiff * diff}, j={j}): ", end="")
-#                     print(f"Row = {row}")
-#                 is_safe = False
-#                 break
-#             if abs(diff) > 3 or abs(diff) < 1:
-#                 if verbose > 1:
-#                     print(f"Row {i:003d} NOT safe: diff to LARGE: ", end="")
-#                     print(f"(diff = {diff}, j={j}): ", end="")
-#                     print(f"Row = {row}")
-#                 is_safe = False
-#                 break
-#             lastdiff = diff
-#         if is_safe:
-#             nsafe += 1
-#             if verbose > 0:
-#                 print(f"Row {i:003d} SAFE: ", end="")
-#                 print(row)
-#     return nsafe, nrows
 
-
-def check_row_safety(row: np.ndarray, row_num: int = 0, verbose=0) -> bool | None:
+def check_row_safety(row: np.ndarray,
+                     row_num: int = 0,
+                     verbose=0) -> bool | None:
     """
         Check a sequence of numbers for 'safety':
 
@@ -137,9 +84,9 @@ def check_row_safety(row: np.ndarray, row_num: int = 0, verbose=0) -> bool | Non
                of successive elements less than or equal to 3.
 
         In other words, if a is a sequence (a zero-based array) of real
-        numbers of length n, i ∈ ℕ: i ∈ (0, n - 1), and 
+        numbers of length n, i ∈ ℕ: i ∈ (0, n - 1), and
         d[i] = a[i] - a[i+1] is the difference between two successive
-        elements in that array, then , a is safe iff 
+        elements in that array, then , a is safe iff
             1. d[i] > 0 or diff[i] < 0, for all i ∈ (0, n - 1), and
             2. abs(d[i]) <= 3 for all i ∈ (0, n - 1).
 
@@ -172,7 +119,8 @@ def check_row_safety(row: np.ndarray, row_num: int = 0, verbose=0) -> bool | Non
     if verbose > 0:
         # A row is safe if all diffs have same sign, and  all diffs
         # are less than or equal to 3:
-        safe = (all(diffarr > 0) or all(diffarr < 0)) and all(abs(diffarr) <= 3)
+        safe = (all(diffarr > 0) or all(diffarr < 0)) \
+                and all(abs(diffarr) <= 3)
         if safe:
             print(f"Row {row_num:003d} SAFE: {list(row)}")
     # Return true if all diffs have same sign, and  all diffs
