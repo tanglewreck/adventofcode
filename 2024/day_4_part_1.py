@@ -74,44 +74,59 @@
     Take a look at the little Elf's word search.
     How many times does XMAS appear?
 
-"""
-# xpylint: disable=too-many-locals
-# xpylint: disable=too-many-statements
-# xpylint: disable=unused-argument
-# xpylint: disable=unused-import
-# pylint: disable=unused-variable
-# xpylint: disable=undefined-variable
+    Your puzzle answer was 2549.
 
+    The first half of this puzzle is complete! It provides one gold star: *
+
+    --- Part Two ---
+
+    The Elf looks quizzically at you. Did you misunderstand the assignment?
+
+    Looking for the instructions, you flip over the word search to find that
+    this isn't actually an XMAS puzzle; it's an X-MAS puzzle in which you're
+    supposed to find two MAS in the shape of an X. One way to achieve that is
+    like this:
+
+    M.S
+    .A.
+    M.S
+
+    Irrelevant characters have again been replaced with . in the above diagram.
+    Within the X, each MAS can be written forwards or backwards.
+
+    Here's the same example from before, but this time all of the X-MASes have
+    been kept instead:
+
+    .M.S......
+    ..A..MSMS.
+    .M.S.MAA..
+    ..A.ASMSM.
+    .M.S.M....
+    ..........
+    S.S.S.S.S.
+    .A.A.A.A..
+    M.M.M.M.M.
+    ..........
+
+    In this example, an X-MAS appears 9 times.
+
+    Flip the word search from the instructions back over to the word search
+    side and try again. How many times does an X-MAS appear?
+
+
+"""
 import os
 import sys
-# import typing  # pylint: disable=unused-import
-# from typing import Optional  # pylint: disable=unused-import
-# from typing import List  # pylint: disable=unused-import
-# from typing import Tuple  # pylint: disable=unused-import
-
-
-# xpylint: xdisable=import-error
 from helpers import __DATADIR__
 from helpers.import_as_dataframe import import_as_dataframe
-import helpers.day_4_count_matches
-# pylint: enable=import-error
+from helpers.day_4_count_matches import count_matches
 
 # Constants
 __NAME__ = "day_4"  # this is us
-# SEARCH_STRING = "XMAS"
 SEARCH_STRING = "xmas"
 
-def main(data_file: str):
+def main():
     """main"""
-    # Import data
-    df = import_as_dataframe(data_file, save=False)
-    # Search for target string and print results
-    n_matches = helpers.day_4_count_matches.count_matches(df, SEARCH_STRING, verbose=1)
-    print(f"Number of matches = {n_matches}")
-
-
-# pylint: disable=invalid-name
-if __name__ == "__main__":
     # Default data input
     input_file = f"{__DATADIR__}/{ __NAME__}_data_example"
     # Check for a commandline argument and use that as
@@ -124,4 +139,12 @@ if __name__ == "__main__":
         raise SystemExit("No such file") from exception
     except IndexError:
         pass
-    main(data_file=input_file)
+    # Import data
+    df = import_as_dataframe(input_file, save=True)
+    # Search for target string and print results
+    n_matches = count_matches(df, SEARCH_STRING, verbose=1)
+    print(f"Number of matches = {n_matches}")
+
+
+if __name__ == "__main__":
+    main()
