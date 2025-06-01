@@ -140,7 +140,7 @@
 """
 import os
 import sys
-# from helpers.import_as_dataframe import import_as_dataframe
+# from utils.as_dataframe import as_dataframe
 # from helpers.day_4_pt2 import x_mas_list, x_mas_pd, x_mas_np
 from helpers import __DATADIR__
 
@@ -163,7 +163,7 @@ def main():
         # Default data input
         input_file = f"{__DATADIR__}/{__NAME__}_part_{__PART__}_data"
     # Import data
-    # df = import_as_dataframe(input_file, save=False)
+    # df = as_dataframe(input_file, save=False)
 
 
 if __name__ == "__main__":
