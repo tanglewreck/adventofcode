@@ -235,6 +235,8 @@ def main() -> None:
             example_data_2 = fp.read()
         with open(fdata, encoding="utf-8") as fp:
             full_data= fp.read()
+        data = example_data
+        data = example_data_2
         data = full_data
 # pylint: enable=unused-variable
     except OSError as exception:
