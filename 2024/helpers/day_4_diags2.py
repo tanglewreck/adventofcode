@@ -131,10 +131,7 @@ def count_xmas(df: pd.DataFrame) -> int:
     n_cols += sum((c.count("xmas") + c.count("samx") for c in col_strings))
     n_diags = sum((d.count("XMAS") + d.count("SAMX") for d in diag_strings))
     n_diags += sum((d.count("xmas") + d.count("samx") for d in diag_strings))
-    print(len(df_rows))
-    print(len(df_cols))
-    print(len(diags))
-    print(n_rows)
-    print(n_cols)
-    print(n_diags)
+    print(f"n_matches (rows) {n_rows}")
+    print(f"n_matches (cols) {n_cols}")
+    print(f"n_matches (diags) {n_diags}")
     return n_rows + n_cols + n_diags

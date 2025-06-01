@@ -119,6 +119,7 @@ import os
 import sys
 from helpers import __DATADIR__
 from helpers.day_4_count_matches import count_matches
+from helpers.day_4_diags2 import count_xmas
 from utils.as_dataframe import as_dataframe
 
 # These determine, e.g., which data file is read
@@ -147,8 +148,13 @@ def main():
     # Import data
     df = as_dataframe(input_file, save=True)
     # Search for target string and print results
+    print("Counting using count_matches()")
     n_matches = count_matches(df, SEARCH_STRING, verbose=1)
-    print(f"Number of matches = {n_matches}")
+    print(f"Number of matches = {n_matches} (count_matches)")
+    print()
+    print("Counting using count_xmas()")
+    n_matches_2 = count_xmas(df)
+    print(f"Number of matches = {n_matches_2} (count_xmas)")
 
 
 if __name__ == "__main__":
