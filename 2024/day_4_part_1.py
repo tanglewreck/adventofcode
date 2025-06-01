@@ -118,18 +118,22 @@
 import os
 import sys
 from helpers import __DATADIR__
-from helpers.import_as_dataframe import import_as_dataframe
 from helpers.day_4_count_matches import count_matches
+from utils.as_dataframe import as_dataframe
 
-# Constants
-__NAME__ = "day_4"  # this is us
+# These determine, e.g., which data file is read
+__DAYNUM__ = "4"  # this is day 4
+__PART__ = "1"  # this is part 1 of day 4
+
+# This is the string we're looking for
 SEARCH_STRING = "xmas"
 
 
 def main():
     """main"""
     # Default data input
-    input_file = f"{__DATADIR__}/{__NAME__}_data_example"
+    # input_file = f"{__DATADIR__}/{__DAYNUM__}_data_example"
+    input_file = f"{__DATADIR__}/day_{__DAYNUM__}_data"
     # Check for a commandline argument and use that as
     # the path to the file containing the input data
     try:
@@ -141,7 +145,7 @@ def main():
     except IndexError:
         pass
     # Import data
-    df = import_as_dataframe(input_file, save=True)
+    df = as_dataframe(input_file, save=True)
     # Search for target string and print results
     n_matches = count_matches(df, SEARCH_STRING, verbose=1)
     print(f"Number of matches = {n_matches}")

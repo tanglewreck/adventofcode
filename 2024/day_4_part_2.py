@@ -120,36 +120,37 @@
 
 
 """
-# import os
-# import sys
-# from helpers import __DATADIR__
-# from helpers.import_as_dataframe import import_as_dataframe
+import os
+import sys
+from utils.as_dataframe import as_dataframe
+from helpers import __DATADIR__
 from helpers.day_4_pt2 import x_mas_list, x_mas_pd, x_mas_np
 
-# Constants
-# __NAME__ = "day_4"  # this is us
+# These determine, e.g., which data file is read
+__DAYNUM__ = "4"  # this is day 4
+__PART__ = "2"  # this is part 2 of day 4
 
 
 def main():
     """main"""
     # Default data input
-    # input_file = f"{__DATADIR__}/{__NAME__}_data"
+    input_file = f"{__DATADIR__}/day_{__DAYNUM__}_data"
     # Check for a commandline argument and use that as
     # the path to the file containing the input data
-    # try:
-    #    input_file = sys.argv[1]
-    #    if not os.access(input_file, os.R_OK):
-    #        raise OSError
-    # except OSError as exception:
-    #    raise SystemExit("No such file") from exception
-    # except IndexError:
-    #    pass
+    try:
+        input_file = sys.argv[1]
+        if not os.access(input_file, os.R_OK):
+            raise OSError
+    except OSError as exception:
+        raise SystemExit("No such file") from exception
+    except IndexError:
+        pass
     # Import data
-    # df = import_as_dataframe(input_file, save=False)
+    df = as_dataframe(input_file, save=False)
     # Search for target string and print results
-    print(x_mas_list())
-    print(x_mas_np())
-    print(x_mas_pd())
+    print("using lists:", x_mas_list(df))
+    print("using np.asarray():", x_mas_np(df))
+    print("using the pd.DataFrame:", x_mas_pd(df))
 
 
 if __name__ == "__main__":
