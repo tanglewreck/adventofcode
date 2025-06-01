@@ -160,9 +160,9 @@ def day_1_part_1():
 def day_1_part_1_alt_1():
     """day_1_alt_1()"""
     # pylint: disable=unused-variable
-    dataprod = "day_1_data"
-    dataexample = "day_1_data_example"
-    data = dataexample
+    data = "day_1_data"
+    # dataexample = "day_1_data_example"
+    # data = dataexample
     # pylint: enable=unused-variable
 
     c1, c2 = [], []
@@ -181,9 +181,9 @@ def day_1_part_1_alt_1():
 def day_1_part_1_alt_2():
     """day_1_alt_2()"""
     # pylint: disable=unused-variable
-    dataprod = "day_1_data"
-    dataexample = "day_1_data_example"
-    data = dataexample
+    data = "day_1_data"
+    # dataexample = "day_1_data_example"
+    # data = dataexample
     # pylint: enable=unused-variable
 
     with open(data) as fp:
