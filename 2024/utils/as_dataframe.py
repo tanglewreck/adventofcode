@@ -4,7 +4,7 @@ import re
 from typing import List, Optional
 import pandas as pd
 
-__all__ = ["import_as_dataframe"]
+__all__ = ["as_dataframe"]
 __version__ = "0.4.1"
 __author__ = "mier"
 __date__ = "2025-05-30"
@@ -17,7 +17,7 @@ EXAMPLE_DATA_CSV = "data/day_4_data_example.csv"
 # pylint: enable=unused-variable
 
 
-def import_as_dataframe(path: str = EXAMPLE_DATA,
+def as_dataframe(path: str = EXAMPLE_DATA,
                         save: bool = False,
                         verbose: int = 0) -> Optional[pd.DataFrame]:
     """import and optionally save as csv"""
