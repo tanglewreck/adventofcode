@@ -177,7 +177,8 @@ def get_input_file():
     return input_file
 
 
-def main(verbose: int = 0):
+# pylint: disable=too-many-branches
+def main(verbose: int = 1):
     """main"""
     # Get name of input file
     input_file = get_input_file()
@@ -186,27 +187,41 @@ def main(verbose: int = 0):
     # rules = build_rules()
     # print(f"rules: {rules}")
     all_ok = True
-    # n_updates = len(updates)
     n_ok = 0
-    # for k, update in enumerate(UPDATES[3:n_updates+1]):
+    # collect the sum of the middle element of each valid update
+    sum_mid_elements: int = 0
     for k, update in enumerate(updates):
         update_ok = True
-        if verbose > 0:
+        if verbose > 1:
             print(f"update[{k}]: {update}")
-        for i, u in enumerate(update):
+        for update_index, update_item in enumerate(update):
             n = len(update)
-            for j in update[i+1:n]:
-                ok = j in rules[u]
+            for j in update[update_index+1:n]:
+                ok = j in rules[update_item]
                 if verbose > 1:
-                    print(f"{j} in rules[{u}] = {ok}")
+                    print(f"{j} in rules[{update_item}] = {ok}")
                 if not ok:
                     all_ok = False
                     update_ok = False
         if update_ok:
             n_ok += 1
-            print(f"update[{k}]: OK")
+            if verbose:
+                print(f"update[{k}]: OK")
+            len_update = len(update)
+            if len_update % 2 != 1:
+                print(f"len(update[{k}]) is even: BAD")
+            else:
+                mid_index = int((len_update - 1) / 2)
+                sum_mid_elements += update[mid_index]
+                if verbose:
+                    print(f"updates[{k}] = {update}")
+                    print(f"len(update[{k}])= {len_update}")
+                    print(f"mid index (update[{k}]) = {mid_index}")
+                    print(f"mid element update[{mid_index}] = "
+                          f"{update[mid_index]}")
         else:
-            print(f"update[{k}]: NOT ok")
+            if verbose > 1:
+                print(f"update[{k}]: NOT ok")
         # print()
     empty_rules = False
     for rulenum, rulelist in rules.items():
@@ -222,4 +237,4 @@ def main(verbose: int = 0):
 
 
 if __name__ == "__main__":
-    main(verbose=0)
+    main()
