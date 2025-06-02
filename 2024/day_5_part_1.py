@@ -1,3 +1,4 @@
+# vim: set numberwidth=4 number expandtab textwidth=79 noignorecase :
 """
 
     --- Day 5: Print Queue ---
@@ -156,7 +157,7 @@ __NAME__ = "day_5"  # this is us
 __PART__ = "1"
 
 
-def get_input_file():
+def get_input_file(example=False):
     """get_input_file"""
     #
     # import argparse
@@ -171,17 +172,37 @@ def get_input_file():
         raise SystemExit("No such file") from exception
     except IndexError:
         # Default data input
-        input_file = pathlib.Path(
-                f"{__DATADIR__}/{__NAME__}_part_{__PART__}"
-        )
+        if example:
+            input_file = pathlib.Path(
+                    f"{__DATADIR__}/{__NAME__}_part_{__PART__}_example_2")
+        else:
+            input_file = pathlib.Path(
+                    f"{__DATADIR__}/{__NAME__}_part_{__PART__}")
     return input_file
 
 
-# pylint: disable=too-many-branches
-def main(verbose: int = 1):
+def main(verbose: int = 0):
     """main"""
+
+#     def check_post_rules():
+#         """check rules for succeeding items"""
+#         for cur_index, cur_item in enumerate(update):
+#             n = len(update)
+#             # check that the current item (page-number) does not occur
+#             # in any of the rules for the following page-numbers
+#             for post_item in update[cur_index + 1: n]:
+#                 # if the current item does not occur in any rule for
+#                 # the items that follow it, then we're good
+#                 # ok = post_item in rules[cur_item]  # this one, or
+#                 ok = cur_item not in rules[post_item]  # this one...
+#                 if verbose > 1:
+#                     print(f"{post_item} in rules[{cur_item}] = {ok}")
+#                 if not ok:
+#                     all_ok = False
+#                     update_ok = False
+
     # Get name of input file
-    input_file = get_input_file()
+    input_file = get_input_file(example=False)
     # Import data
     rules, updates = get_data(input_file)
     # rules = build_rules()
@@ -189,17 +210,31 @@ def main(verbose: int = 1):
     all_ok = True
     n_ok = 0
     # collect the sum of the middle element of each valid update
-    sum_mid_elements: int = 0
+    sum_mid_pages: int = 0
+    # verify updates; for valid updates, add the middle page-number
+    # to the sum of mid-pages (sum_mid_pages)
     for k, update in enumerate(updates):
         update_ok = True
         if verbose > 1:
             print(f"update[{k}]: {update}")
-        for update_index, update_item in enumerate(update):
+        # walk through each update and check that for each
+        # page-number and for each page-numbers following
+        # that page-number, no rule stipulates that one of
+        # succeeding page-numbers should precede the page-number
+        # being checked; if that is the case, the update is
+        # invalid; if there's no conflicting rule, the update
+        # is valid
+        for cur_index, cur_item in enumerate(update):
             n = len(update)
-            for j in update[update_index+1:n]:
-                ok = j in rules[update_item]
+            # check that the current item (page-number) does not occur
+            # in any of the rules for the following page-numbers
+            for post_item in update[cur_index + 1: n]:
+                # if the current item does not occur in any rule for
+                # the items that follow it, then we're good
+                # ok = post_item in rules[cur_item]  # this one, or
+                ok = cur_item not in rules[post_item]  # this one...
                 if verbose > 1:
-                    print(f"{j} in rules[{update_item}] = {ok}")
+                    print(f"{post_item} in rules[{cur_item}] = {ok}")
                 if not ok:
                     all_ok = False
                     update_ok = False
@@ -212,13 +247,13 @@ def main(verbose: int = 1):
                 print(f"len(update[{k}]) is even: BAD")
             else:
                 mid_index = int((len_update - 1) / 2)
-                sum_mid_elements += update[mid_index]
+                sum_mid_pages += update[mid_index]
                 if verbose:
-                    print(f"updates[{k}] = {update}")
-                    print(f"len(update[{k}])= {len_update}")
-                    print(f"mid index (update[{k}]) = {mid_index}")
-                    print(f"mid element update[{mid_index}] = "
-                          f"{update[mid_index]}")
+                    # print(f"updates[{k}] = {update}")
+                    # print(f"len(update[{k}])= {len_update}")
+                    # print(f"mid index (update[{k}]) = {mid_index}")
+                    print(f"mid = {update[mid_index]}")
+                    print(f"sum = {sum_mid_pages}")
         else:
             if verbose > 1:
                 print(f"update[{k}]: NOT ok")
@@ -227,13 +262,15 @@ def main(verbose: int = 1):
     for rulenum, rulelist in rules.items():
         if not rulelist:
             empty_rules = True
-            print(f"rule {rulenum} is empty ({rulelist})")
+            if verbose:
+                print(f"rule {rulenum} is empty ({rulelist})")
     if empty_rules:
         print("empty rules found")
     else:
         print("NO empty rules found")
     print(f"all_ok = {all_ok}")
     print(f"number of OK updates = {n_ok}")
+    print(f"sum of mid pages = {sum_mid_pages}")
 
 
 if __name__ == "__main__":
