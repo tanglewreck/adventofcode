@@ -1,4 +1,4 @@
-# vim: set numberwidth=4 number expandtab textwidth=79 noignorecase :
+# vim: set numberwidth=4 number noignorecase :
 """
 
     --- Day 5: Print Queue ---
@@ -138,9 +138,34 @@
 
     --> 4135  <--
 
+    The first half of this puzzle is complete! It provides one gold star: *
+    --- Part Two ---
+
+    While the Elves get to work printing the correctly-ordered updates, you
+    have a little time to fix the rest of them.
+
+    For each of the incorrectly-ordered updates, use the page ordering rules to
+    put the page numbers in the right order. For the above example, here are
+    the three incorrectly-ordered updates and their correct orderings:
+
+        75,97,47,61,53 becomes 97,75,47,61,53.
+        61,13,29 becomes 61,29,13.
+        97,13,75,29,47 becomes 97,75,47,29,13.
+
+    After taking only the incorrectly-ordered updates and ordering
+    them correctly, their middle page numbers are 47, 29, and 47.
+    Adding these together produces 123.
+
+    Find the updates which are not in the correct order. What do
+    you get if you add up the middle page numbers after correctly
+    ordering just those updates?
+
+    -->   <--
+
 """
 
 # from collections import defaultdict
+import argparse
 from helpers.day_5_part_1 import get_rules_and_updates
 from utils.get_data_path import get_data_path
 from utils.verbose_msg import verbose_msg
@@ -150,8 +175,8 @@ __DAYNUM__ = 5  # this is us
 __PART__ = 1
 
 
-def main(verbose: int = 0):
-    """main"""
+def part_1(example, verbose: int = 0):
+    """part 1"""
 
     def check_for_empty_rules(rules, verbose=0):
         """check for empty rules"""
@@ -164,7 +189,7 @@ def main(verbose: int = 0):
         return empty_rules
 
     # Get name of input file
-    data_path = get_data_path(__DAYNUM__, __PART__, example=False)
+    data_path = get_data_path(__DAYNUM__, __PART__, example=example)
     # Import data
     rules, updates = get_rules_and_updates(data_path)
     # rules = build_rules()
@@ -223,6 +248,27 @@ def main(verbose: int = 0):
     print(f"all_ok = {all_ok}")
     print(f"number of OK updates = {n_valid_rules}")
     print(f"sum of mid pages = {sum_mid_pages}")
+
+
+def main(verbose: int = 0):
+    """main"""
+
+    parser = argparse.ArgumentParser(description="aoc 2024 day 5",
+                                     prog="day_5",
+                                     add_help=True)
+    parser.add_argument('--part', type=int, default=1,
+                        help='part number (1 or 2)')
+    parser.add_argument('--example', default=False,
+                        action='store_true',
+                        help='use example datafile')
+    args = parser.parse_args()
+    if args.part == 1:
+        part_1(args.example, verbose)
+    elif args.part == 2:
+        print("part_2(args.example, verbose)")
+    else:
+        print("invalid part number")
+        raise SystemExit(1, "invalid part number")
 
 
 if __name__ == "__main__":
