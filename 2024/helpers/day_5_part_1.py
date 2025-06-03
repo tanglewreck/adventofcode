@@ -3,13 +3,14 @@
 
 from pathlib import Path
 from collections import defaultdict
+from typing import DefaultDict, List, Tuple
 from utils import __DATADIR__
 
 DEFAULT_DATA = Path(f"{__DATADIR__}/day_5_part_1")
 
 
 def get_rules_and_updates(data_path: Path = DEFAULT_DATA,
-                          verbose=0) -> tuple[dict, list]:
+                          verbose: int = 0) -> Tuple[DefaultDict, List[List[int]]]:
     """
         get_rules_and_updates()
             Read, parse, and return rules and updates
@@ -24,9 +25,9 @@ def get_rules_and_updates(data_path: Path = DEFAULT_DATA,
         # sets the dict-value to an empty list, if there's not already
         # a key for that value, and then appends the value to that list
         # rules: dict[int, list[int]] = {}
-        rules: defaultdict[int, list[int]] = defaultdict(lambda: [])
+        rules: DefaultDict[int, list[int]] = defaultdict(lambda: [])
         # read rules until the rules-updates separator
-        # "XX" is encounterd
+        # (empty line) is encounterd
         while line := fp.readline().strip():
             # if we have encountered the separator,
             # we're done reading rules
@@ -41,7 +42,7 @@ def get_rules_and_updates(data_path: Path = DEFAULT_DATA,
             # otherwise initialise the rule with an empty list
             rules[pre].append(post)  # type(rules) = collections.defaultdict!
         # read updates
-        updates: list[list[int]] = []
+        updates: List[List[int]] = []
         while line := fp.readline().strip():
             update = list(map(int, line.split(',')))
             updates.append(update)
@@ -52,7 +53,7 @@ def get_rules_and_updates(data_path: Path = DEFAULT_DATA,
                     rules[page] = []
     # print(updates)
     # print([(k, " ".join([str(x) for x in v])) for k, v in rules.items()])
-    if verbose:
+    if verbose > 0:
         print(rules)
         print(f"there are {len(rules)} rules")
     return rules, updates

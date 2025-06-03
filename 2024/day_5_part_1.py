@@ -151,6 +151,17 @@
         75,97,47,61,53 becomes 97,75,47,61,53.
         61,13,29 becomes 61,29,13.
         97,13,75,29,47 becomes 97,75,47,29,13.
+    for each element in the update
+        check the rules for all suceeding elements
+            if the current element occurs in a rule,
+            pop the current element and shift all elements
+            up to the element in who's rule the current element
+            occur to the left and place the current element there instead
+
+            define a function who returns true if the element being
+            checked occurs in the reference value's rule (which states
+            what elements must suceed it), then use that function as
+            the sort-function argument to sorted()
 
     After taking only the incorrectly-ordered updates and ordering
     them correctly, their middle page numbers are 47, 29, and 47.
@@ -166,45 +177,79 @@
 
 # from collections import defaultdict
 import argparse
+from collections import defaultdict
+from typing import DefaultDict, List  # , Tuple
 from helpers.day_5_part_1 import get_rules_and_updates
 from utils.get_data_path import get_data_path
 from utils.verbose_msg import verbose_msg
 
 # Constants
 __DAYNUM__ = 5  # this is us
-__PART__ = 1
 
 
-def part_1(example, verbose: int = 0):
-    """part 1"""
+def check_for_empty_rules(rules, verbose=0):
+    """check for empty rules"""
+    empty_rules = False
+    for rulenum, rulelist in rules.items():
+        if not rulelist:
+            empty_rules = True
+            if verbose > 0:
+                print(f"rule {rulenum} is empty ({rulelist})")
+    return empty_rules
 
-    def check_for_empty_rules(rules, verbose=0):
-        """check for empty rules"""
-        empty_rules = False
-        for rulenum, rulelist in rules.items():
-            if not rulelist:
-                empty_rules = True
-                if verbose:
-                    print(f"rule {rulenum} is empty ({rulelist})")
-        return empty_rules
 
+def update_is_valid(update: List[int],
+                    rules: DefaultDict[int, List[int]],
+                    verbose: int = 0) -> bool:
+    """
+        update_is_valid
+            check if a rule is valid according to the rules
+    """
+    update_valid: bool = True
+    for cur_index, cur_item in enumerate(update):
+        n = len(update)
+        # check that the current item (page-number) does not occur
+        # in any of the rules for the following page-numbers
+        for post_item in update[cur_index + 1: n]:
+            # if the current item does not occur in any rule for
+            # the items that follow it, then we're good
+            # ok = post_item in rules[cur_item]  # this one, or
+            ok = cur_item not in rules[post_item]  # this one...
+            verbose_msg(f"{post_item} in rules[{cur_item}] = {ok}",
+                        verbose_lvl_req=2, verbose_lvl=verbose)
+            if not ok:
+                update_valid = False
+    return update_valid
+
+
+def part_1(example: bool, verbose: int = 0):
+    # -> Tuple[List[List[int]], List[int]]:
+    # List[int]:
+    """
+        part 1()
+            returns a tuple of (lists of) valid and invalid updates
+    """
     # Get name of input file
-    data_path = get_data_path(__DAYNUM__, __PART__, example=example)
+    part = 1
+    data_path = get_data_path(__DAYNUM__, part, example=example)
     # Import data
+    rules: DefaultDict[int, list[int]] = defaultdict(lambda: [])
+    updates: List[List[int]] = []
     rules, updates = get_rules_and_updates(data_path)
-    # rules = build_rules()
-    # print(f"rules: {rules}")
-    all_ok = True
+    all_updates_ok = True
     n_valid_rules = 0
     # collect the sum of the middle element of each valid update
     sum_mid_pages: int = 0
     # verify updates; for valid updates, add the middle page-number
-    # to the sum of mid-pages (sum_mid_pages)
-    for k, update in enumerate(updates):
-        update_ok = True
-        verbose_msg(f"update[{k}]: {update}", 1, verbose)
+    # to the sum of mid-pages (sum_mid_pages); also, collect the indices
+    # of valid and invalid updates, respectively
+    valid_updates: List[int] = []
+    invalid_updates: List[int] = []
+    for update_index, update in enumerate(updates):
+        update_valid = True
+        verbose_msg(f"update[{update_index}]: {update}", 1, verbose)
         # if verbose > 1:
-        #    print(f"update[{k}]: {update}")
+        #    print(f"update[{update_index}]: {update}")
         # walk through each update and check that for each
         # page-number and for each page-numbers following
         # that page-number, no rule stipulates that one of
@@ -212,63 +257,67 @@ def part_1(example, verbose: int = 0):
         # being checked; if that is the case, the update is
         # invalid; if there's no conflicting rule, the update
         # is valid
-        for cur_index, cur_item in enumerate(update):
-            n = len(update)
-            # check that the current item (page-number) does not occur
-            # in any of the rules for the following page-numbers
-            for post_item in update[cur_index + 1: n]:
-                # if the current item does not occur in any rule for
-                # the items that follow it, then we're good
-                # ok = post_item in rules[cur_item]  # this one, or
-                ok = cur_item not in rules[post_item]  # this one...
-                verbose_msg(f"{post_item} in rules[{cur_item}] = {ok}",
-                            verbose_lvl_req=2, verbose_lvl=verbose)
-                if not ok:
-                    all_ok = False
-                    update_ok = False
+        update_valid = update_is_valid(update, rules, verbose=verbose)
         # if the current update is valid, bump the valid rules-counter
         # and add the middle element to the sum of middle elements
-        if update_ok:
+        if update_valid:
             n_valid_rules += 1
-            verbose_msg(f"update[{k}]: OK", 1, verbose)
+            valid_updates.append(update_index)
+            verbose_msg(f"update[{update_index}]: OK", 1, verbose)
             len_update = len(update)
             if len_update % 2 != 1:
-                print(f"len(update[{k}]) is even: BAD")
+                print(f"len(update[{update_index}]) is even: BAD")
             else:
                 mid_index = int(len_update / 2)
                 sum_mid_pages += update[mid_index]
                 verbose_msg(f"mid = {update[mid_index]}\n" +
                             f"sum = {sum_mid_pages}", 2, verbose)
         else:
-            verbose_msg(f"update[{k}]: NOT ok", 1, verbose)
-    if check_for_empty_rules(rules, verbose=0):
+            all_updates_ok = False
+            invalid_updates.append(update_index)
+            verbose_msg(f"update[{update_index}]: NOT ok", 1, verbose)
+    if check_for_empty_rules(rules, verbose=verbose):
         print("empty rules found")
     else:
         print("NO empty rules found")
-    print(f"all_ok = {all_ok}")
+    print(f"all_updates_ok = {all_updates_ok}")
     print(f"number of OK updates = {n_valid_rules}")
     print(f"sum of mid pages = {sum_mid_pages}")
+    return updates, invalid_updates, rules
 
 
-def main(verbose: int = 0):
+def part_2(updates, invalid_updates, rules):
+    """make invalid updates valid"""
+    for update in invalid_updates:
+        print(f"update {update}: {updates[update]}")
+    print(dict(rules))
+
+
+def main():
     """main"""
 
     parser = argparse.ArgumentParser(description="aoc 2024 day 5",
                                      prog="day_5",
                                      add_help=True)
     parser.add_argument('--part', type=int, default=1,
+                        choices=[1, 2],
                         help='part number (1 or 2)')
     parser.add_argument('--example', default=False,
                         action='store_true',
                         help='use example datafile')
+    parser.add_argument('--input', type=argparse.FileType('r'),
+                        help='not used)')
+    parser.add_argument('--verbose', type=int, default=0,
+                        choices=[0, 1, 2],
+                        help='get diagnostics')
     args = parser.parse_args()
     if args.part == 1:
-        part_1(args.example, verbose)
-    elif args.part == 2:
-        print("part_2(args.example, verbose)")
+        # if args.input:
+        #    example = False
+        #    print(args.input)
+        part_1(args.example, args.verbose)
     else:
-        print("invalid part number")
-        raise SystemExit(1, "invalid part number")
+        part_2(*part_1(args.example, args.verbose))
 
 
 if __name__ == "__main__":
