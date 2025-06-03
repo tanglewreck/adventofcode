@@ -136,87 +136,50 @@
     What do you get if you add up the middle page
     number from those correctly-ordered updates?
 
-    -->  <--
+    --> 4135  <--
 
 """
-import os
-import pathlib
-from pathlib import Path
-import sys
-# from utils.as_dataframe import as_dataframe
-# from helpers.day_4_pt2 import x_mas_list, x_mas_pd, x_mas_np
-from helpers import __DATADIR__
 
 # from collections import defaultdict
-from helpers.day_5_part_1 import get_data
-# from helpers.day_5_part_1 import get_data, build_rules
-# from helpers.day_5_part_1 import UPDATES, RULES_EXAMPLE
+from helpers.day_5_part_1 import get_rules_and_updates
+from utils.get_data_path import get_data_path
+from utils.verbose_msg import verbose_msg
 
 # Constants
-__NAME__ = "day_5"  # this is us
-__PART__ = "1"
-
-
-def get_input_file(example=False):
-    """get_input_file"""
-    #
-    # import argparse
-    #
-    # Check for a commandline argument and use that as
-    # the path to the file containing the input data
-    try:
-        input_file = Path(sys.argv[1])
-        if not os.access(input_file, os.R_OK):
-            raise OSError
-    except OSError as exception:
-        raise SystemExit("No such file") from exception
-    except IndexError:
-        # Default data input
-        if example:
-            input_file = pathlib.Path(
-                    f"{__DATADIR__}/{__NAME__}_part_{__PART__}_example_2")
-        else:
-            input_file = pathlib.Path(
-                    f"{__DATADIR__}/{__NAME__}_part_{__PART__}")
-    return input_file
+__DAYNUM__ = 5  # this is us
+__PART__ = 1
 
 
 def main(verbose: int = 0):
     """main"""
 
-#     def check_post_rules():
-#         """check rules for succeeding items"""
-#         for cur_index, cur_item in enumerate(update):
-#             n = len(update)
-#             # check that the current item (page-number) does not occur
-#             # in any of the rules for the following page-numbers
-#             for post_item in update[cur_index + 1: n]:
-#                 # if the current item does not occur in any rule for
-#                 # the items that follow it, then we're good
-#                 # ok = post_item in rules[cur_item]  # this one, or
-#                 ok = cur_item not in rules[post_item]  # this one...
-#                 if verbose > 1:
-#                     print(f"{post_item} in rules[{cur_item}] = {ok}")
-#                 if not ok:
-#                     all_ok = False
-#                     update_ok = False
+    def check_for_empty_rules(rules, verbose=0):
+        """check for empty rules"""
+        empty_rules = False
+        for rulenum, rulelist in rules.items():
+            if not rulelist:
+                empty_rules = True
+                if verbose:
+                    print(f"rule {rulenum} is empty ({rulelist})")
+        return empty_rules
 
     # Get name of input file
-    input_file = get_input_file(example=False)
+    data_path = get_data_path(__DAYNUM__, __PART__, example=False)
     # Import data
-    rules, updates = get_data(input_file)
+    rules, updates = get_rules_and_updates(data_path)
     # rules = build_rules()
     # print(f"rules: {rules}")
     all_ok = True
-    n_ok = 0
+    n_valid_rules = 0
     # collect the sum of the middle element of each valid update
     sum_mid_pages: int = 0
     # verify updates; for valid updates, add the middle page-number
     # to the sum of mid-pages (sum_mid_pages)
     for k, update in enumerate(updates):
         update_ok = True
-        if verbose > 1:
-            print(f"update[{k}]: {update}")
+        verbose_msg(f"update[{k}]: {update}", 1, verbose)
+        # if verbose > 1:
+        #    print(f"update[{k}]: {update}")
         # walk through each update and check that for each
         # page-number and for each page-numbers following
         # that page-number, no rule stipulates that one of
@@ -233,43 +196,32 @@ def main(verbose: int = 0):
                 # the items that follow it, then we're good
                 # ok = post_item in rules[cur_item]  # this one, or
                 ok = cur_item not in rules[post_item]  # this one...
-                if verbose > 1:
-                    print(f"{post_item} in rules[{cur_item}] = {ok}")
+                verbose_msg(f"{post_item} in rules[{cur_item}] = {ok}",
+                            verbose_lvl_req=2, verbose_lvl=verbose)
                 if not ok:
                     all_ok = False
                     update_ok = False
+        # if the current update is valid, bump the valid rules-counter
+        # and add the middle element to the sum of middle elements
         if update_ok:
-            n_ok += 1
-            if verbose:
-                print(f"update[{k}]: OK")
+            n_valid_rules += 1
+            verbose_msg(f"update[{k}]: OK", 1, verbose)
             len_update = len(update)
             if len_update % 2 != 1:
                 print(f"len(update[{k}]) is even: BAD")
             else:
-                mid_index = int((len_update - 1) / 2)
+                mid_index = int(len_update / 2)
                 sum_mid_pages += update[mid_index]
-                if verbose:
-                    # print(f"updates[{k}] = {update}")
-                    # print(f"len(update[{k}])= {len_update}")
-                    # print(f"mid index (update[{k}]) = {mid_index}")
-                    print(f"mid = {update[mid_index]}")
-                    print(f"sum = {sum_mid_pages}")
+                verbose_msg(f"mid = {update[mid_index]}\n" +
+                            f"sum = {sum_mid_pages}", 2, verbose)
         else:
-            if verbose > 1:
-                print(f"update[{k}]: NOT ok")
-        # print()
-    empty_rules = False
-    for rulenum, rulelist in rules.items():
-        if not rulelist:
-            empty_rules = True
-            if verbose:
-                print(f"rule {rulenum} is empty ({rulelist})")
-    if empty_rules:
+            verbose_msg(f"update[{k}]: NOT ok", 1, verbose)
+    if check_for_empty_rules(rules, verbose=0):
         print("empty rules found")
     else:
         print("NO empty rules found")
     print(f"all_ok = {all_ok}")
-    print(f"number of OK updates = {n_ok}")
+    print(f"number of OK updates = {n_valid_rules}")
     print(f"sum of mid pages = {sum_mid_pages}")
 
 
