@@ -3,16 +3,18 @@
 
 from pathlib import Path
 from collections import defaultdict
+from utils import __DATADIR__
 
-DEFAULT_DATA = Path("data/day_5_part_1")
+DEFAULT_DATA = Path(f"{__DATADIR__}/day_5_part_1")
 
 
-def get_data(data_file: Path = DEFAULT_DATA, verbose=0) -> tuple[dict, list]:
+def get_rules_and_updates(data_path: Path = DEFAULT_DATA,
+                          verbose=0) -> tuple[dict, list]:
     """
-        get_data()
-            Read rules and updates from disk
+        get_rules_and_updates()
+            Read, parse, and return rules and updates
     """
-    with open(data_file) as fp:
+    with open(data_path) as fp:
         # rules are stored in a dictionary with page-numbers
         # as keys and a list of all pages that cannot preceed
         # the key-page as values:
@@ -28,7 +30,7 @@ def get_data(data_file: Path = DEFAULT_DATA, verbose=0) -> tuple[dict, list]:
         while line := fp.readline().strip():
             # if we have encountered the separator,
             # we're done reading rules
-            if "XX" in line:
+            if not line:
                 break
             # break up the rule; split on "|" and
             # convert each part to an int
