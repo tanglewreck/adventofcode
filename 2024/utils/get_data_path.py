@@ -20,17 +20,26 @@ def get_data_path(daynum: int, part: int, example: bool = False) -> Path:
     #
     # Check for a commandline argument and use that as
     # the path to the file containing the input data
+    # Default data input
+    default_path = f"{__DATADIR__}/day_{daynum}_part_{part}"
     try:
-        data_path = Path(sys.argv[1])
-        if not os.access(data_path, os.R_OK):
-            raise OSError
-    except OSError as exception:
-        raise SystemExit("No such file") from exception
-    except IndexError:
-        # Default data input
-        default_path = f"{__DATADIR__}/day_{daynum}_part_{part}"
         if example:
             data_path = pathlib.Path(default_path + "_example_2")
         else:
             data_path = pathlib.Path(default_path)
+        if not os.access(data_path, os.R_OK):
+            raise OSError
+    except OSError as exception:
+        raise SystemExit("No such file") from exception
     return data_path
+#     try:
+#         data_path = Path(sys.argv[1])
+#         if not os.access(data_path, os.R_OK):
+#             raise OSError
+#     except OSError as exception:
+#         raise SystemExit("No such file") from exception
+#     except IndexError:
+#         if example:
+#             data_path = pathlib.Path(default_path + "_example_2")
+#         else:
+#             data_path = pathlib.Path(default_path)
