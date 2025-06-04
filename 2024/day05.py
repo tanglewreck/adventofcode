@@ -171,7 +171,7 @@
     you get if you add up the middle page numbers after correctly
     ordering just those updates?
 
-    -->   <--
+    --> 5285 <--
 
 """
 
@@ -291,8 +291,8 @@ def part_2(updates, rules, first_sum, verbose: int = 0):
         second_sum += update[mid]
     print(f"sum of mids (valid updates) = {first_sum}")
     print(f"sum of mids (fixed updates) = {second_sum}")
-    print(f"diff = {second_sum - first_sum}")
     print(f"total sum = {second_sum + first_sum}")
+    print(f"diff (the answer to part 2) = {second_sum - first_sum}")
 
 
 def main():
