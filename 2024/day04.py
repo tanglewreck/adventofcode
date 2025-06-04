@@ -74,6 +74,8 @@
     Take a look at the little Elf's word search.
     How many times does XMAS appear?
 
+        --> 2549 <--
+
     Your puzzle answer was 2549.
 
     The first half of this puzzle is complete! It provides one gold star: *
@@ -113,12 +115,17 @@
     Flip the word search from the instructions back over to the word search
     side and try again. How many times does an X-MAS appear?
 
+        --> 2003 <--
+
+    That's the right answer! You are one gold star closer to finding the Chief
+    Historian.
 
 """
 import argparse
 from pathlib import Path
 from helpers.day_4_count_matches import count_matches
 from helpers.day_4_xmas_count import count_xmas
+from helpers.day_4_xmas import x_mas_list, x_mas_pd, x_mas_np
 from utils.as_dataframe import as_dataframe
 from utils.get_data_path import get_data_path
 from utils.verbose_msg import verbose_msg
@@ -136,8 +143,12 @@ def part_1(example: bool = False, verbose: int = 0):
     """
         part_1()
     """
-    data_path: Path = get_data_path(__DAYNUM__, part=__PART__, example=example)
+    # this is part 2
+    part = 1
+    # get path to datafile
+    data_path: Path = get_data_path(__DAYNUM__, part=part, example=example)
     verbose_msg(f"using path: {data_path}", 1, verbose)
+    # get dataframe
     df = as_dataframe(data_path, save=False)
     verbose_msg(f"{df}", 1, verbose)
     # Search for target string and print results
@@ -148,6 +159,22 @@ def part_1(example: bool = False, verbose: int = 0):
     print("Counting using count_xmas()")
     n_matches_2 = count_xmas(df)
     print(f"Number of matches = {n_matches_2} (count_xmas)")
+
+
+def part_2(example: bool = False, verbose: int = 0):
+    """part_2()"""
+    # this is part 2
+    part = 2
+    # get path to datafile
+    data_path: Path = get_data_path(__DAYNUM__, part=part, example=example)
+    verbose_msg(f"using path: {data_path}", 1, verbose)
+    # get dataframe
+    df = as_dataframe(data_path, save=False)
+    verbose_msg(f"{df}", 1, verbose)
+    # Search for target string and print results
+    print("using lists:", x_mas_list(df))
+    print("using np.asarray:", x_mas_np(df))
+    print("using the pd.DataFrame:", x_mas_pd(df))
 
 
 def main():
@@ -170,7 +197,7 @@ def main():
     if args.part == 1:
         part_1(args.example, args.verbose)
     else:
-        part_1(args.example, args.verbose)
+        part_2(args.example, args.verbose)
 
 
 if __name__ == "__main__":
