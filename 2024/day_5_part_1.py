@@ -188,6 +188,7 @@ from utils.verbose_msg import verbose_msg
 
 # Constants
 __DAYNUM__ = 5  # this is us
+__PART__ = 1
 
 
 def check_for_empty_rules(rules, verbose=0):
@@ -213,8 +214,7 @@ def part_1(example: bool, verbose: int = 0):
     print(" PART 1")
     print("= " * 10)
     # Get name of input file
-    part = 1
-    data_path = get_data_path(__DAYNUM__, part, example=example)
+    data_path = get_data_path(__DAYNUM__, __PART__, example=example)
     # Import data
     rules: DefaultDict[int, list[int]] = defaultdict(lambda: [])
     updates: List[List[int]] = []
@@ -284,15 +284,15 @@ def part_2(updates, rules, first_sum, verbose: int = 0):
     if verify_updates(updates, rules, verbose=verbose):
         print("all updates now valid")
         for update in updates:
-            print(f"{update}")
+            verbose_msg(f"{update}", 1, verbose)
     second_sum = 0
     for update in updates:
         mid = int(len(update) / 2)
         second_sum += update[mid]
-    print(f"sum of mids (unfixed updates) = {first_sum}")
+    print(f"sum of mids (valid updates) = {first_sum}")
     print(f"sum of mids (fixed updates) = {second_sum}")
-    print("diff of sums = "
-          f"{second_sum - first_sum}")
+    print(f"diff = {second_sum - first_sum}")
+    print(f"total sum = {second_sum + first_sum}")
 
 
 def main():
@@ -314,9 +314,6 @@ def main():
                         help='get diagnostics')
     args = parser.parse_args()
     if args.part == 1:
-        # if args.input:
-        #    example = False
-        #    print(args.input)
         part_1(args.example, args.verbose)
     else:
         part_2(*part_1(args.example, args.verbose))
