@@ -2,8 +2,8 @@
     --- Day 3: Mull It Over ---
 
     "Our computers are having issues, so I have no idea if we have any Chief
-    Historians in stock! You're welcome to check the warehouse, though," says the
-    mildly flustered shopkeeper at the North Pole Toboggan Rental Shop. The
+    Historians in stock! You're welcome to check the warehouse, though," says
+    the mildly flustered shopkeeper at the North Pole Toboggan Rental Shop. The
     Historians head out to take a look.
 
     The shopkeeper turns to you. "Any chance you can see why our computers are
@@ -14,13 +14,13 @@
 
     It seems like the goal of the program is just to multiply some numbers. It
     does that with instructions like mul(X,Y), where X and Y are each 1-3 digit
-    numbers. For instance, mul(44,46) multiplies 44 by 46 to get a result of 2024.
-    Similarly, mul(123,4) would multiply 123 by 4.
+    numbers. For instance, mul(44,46) multiplies 44 by 46 to get a result of
+    2024.  Similarly, mul(123,4) would multiply 123 by 4.
 
     However, because the program's memory has been corrupted, there are also
-    many invalid characters that should be ignored, even if they look like part of
-    a mul instruction. Sequences like mul(4*, mul(6,9!, ?(12,34), or mul ( 2 , 4 )
-    do nothing.
+    many invalid characters that should be ignored, even if they look like part
+    of a mul instruction. Sequences like mul(4*, mul(6,9!, ?(12,34), or
+    mul ( 2 , 4 ) do nothing.
 
     For example, consider the following section of corrupted memory:
 
@@ -42,36 +42,38 @@
 
     As you scan through the corrupted memory, you notice that some of the
     conditional statements are also still intact. If you handle some of the
-    uncorrupted conditional statements in the program, you might be able to get an
-    even more accurate result.
+    uncorrupted conditional statements in the program, you might be able to get
+    an even more accurate result.
 
     There are two new instructions you'll need to handle:
 
         - The do() instruction enables future mul instructions.
         - The don't() instruction disables future mul instructions.
 
-    Only the most recent do() or don't() instruction applies. At the beginning of
-    the program, mul instructions are enabled.
+    Only the most recent do() or don't() instruction applies. At the beginning
+    of the program, mul instructions are enabled.
 
     For example:
 
     xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))
 
-    This corrupted memory is similar to the example from before, but this time the
-    mul(5,5) and mul(11,8) instructions are disabled because there is a don't()
-    instruction before them. The other mul instructions function normally,
-    including the one at the end that gets re-enabled by a do() instruction.
+    This corrupted memory is similar to the example from before, but this time
+    the mul(5,5) and mul(11,8) instructions are disabled because there is a
+    don't() instruction before them. The other mul instructions function
+    normally, including the one at the end that gets re-enabled by a do()
+    instruction.
 
     This time, the sum of the results is 48 (2*4 + 8*5).
 
-    Handle the new instructions; what do you get if you add up all of the results
-    of just the enabled multiplications?
+    Handle the new instructions; what do you get if you add up all of the
+    results of just the enabled multiplications?
 
     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     A: 113965544
     - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    That's the right answer! You are one gold star closer to finding the Chief Historian.
+    That's the right answer! You are one gold star closer to finding the Chief
+    Historian.
 
     You have completed Day 3!
 
@@ -87,49 +89,12 @@
 from string import digits
 
 
-# def mul(x: int|float, y: int|float) -> int | float:
-#     """Multiply two numbers"""
-#     return x * y
-#
-#
-# def day_3_part_1() -> None:
-#     """day_3_part_1()"""
-#     fdata = "data/day_3_data"
-#     fdata_example = "data/day_3_data_example"
-#     # Import data
-#     try:
-#         with open(fdata_example, encoding="utf-8") as fp:
-#             data_example = fp.read()
-#         with open(fdata, encoding="utf-8") as fp:
-#             data= fp.read()
-#     except OSError as exception:
-#         print(repr(exception))
-#         raise SystemExit(1) from exception
-#     # Compile a regexp that will match 'mul(<num>,<num>)'
-#     mul_regexp = re.compile(r"mul\(\d+,\s*\d+\)")
-#     # Prepare two lists that will hold the reults of
-#     # the multiplications
-#     mul_results, mul_results_example = [], []
-#     # Get results for the example-data
-#     for match in mul_regexp.findall(data_example):
-#         # pylint: disable=eval-used
-#         mul_results_example.append(eval(match))
-#     # Get results for the full data
-#     for match in mul_regexp.findall(data):
-#         # pylint: disable=eval-used
-#         mul_results.append(eval(match))
-#     # Print results
-#     print(f"Sum of multiplications (example data)= {sum(mul_results_example)}")
-#     print(f"Sum of multiplications (full data) = {sum(mul_results)}")
-#
-#
-
 # TEST_DATA = "xyxmul(123,456)xyzmuöl(38),.mul(1,2)mul(3,3333)sjsjX"
 TEST_DATA = "xyxmul(100,456)xyzmuöl(38),.mul(1,2)mul(3,10)sjsjX"
 TEST_DATA_2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 
 
-def mul(x: int|float, y: int|float) -> int|float:
+def mul(x: int | float, y: int | float) -> int | float:
     """Multiply two numbers"""
     return x * y
 
@@ -149,8 +114,8 @@ def parse_data(data: str = TEST_DATA, do_dont: bool = False,
                verbose: int = 0) -> list:
     """
         parse_data()
-            Extracts valid tokens (substrings of the form 'mul(x,y)', where x and y
-            are integers) from a string.
+            Extracts valid tokens (substrings of the form 'mul(x,y)', where x
+            and y are integers) from a string.
 
             Returns a list of token-strings.
     """
@@ -234,7 +199,7 @@ def main() -> None:
         with open(fdata_example_2, encoding="utf-8") as fp:
             example_data_2 = fp.read()
         with open(fdata, encoding="utf-8") as fp:
-            full_data= fp.read()
+            full_data = fp.read()
         data = example_data
         data = example_data_2
         data = full_data
@@ -254,7 +219,6 @@ def main() -> None:
     print(f"Number of mul()-tokens = {len(tokens)}")
     print()
 
-
     # Get tokens
     tokens = parse_data(data, do_dont=True, verbose=0)
     token_sum = 0
@@ -264,6 +228,7 @@ def main() -> None:
     print("do/dont = True")
     print(f"Sum of mul()-tokens = {token_sum}")
     print(f"Number of mul()-tokens = {len(tokens)}")
+
 
 if __name__ == "__main__":
     main()
