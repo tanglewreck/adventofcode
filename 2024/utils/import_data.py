@@ -21,7 +21,7 @@ def import_data(daynum: int, part: int = 1, example=False) -> pd.DataFrame:
     data_path: Path = get_data_path(daynum, part=part, example=example)
     try:
         with open(data_path) as fp:
-            temp_df = pd.read_csv(fp, sep=",", dtype=float)  # dtype=int, na_values=0)
+            temp_df = pd.read_csv(fp, sep=",", dtype=float)
             # Replace NaN's with 0.0
             temp_df.fillna(0.0, inplace=True)
             # Convert to int
