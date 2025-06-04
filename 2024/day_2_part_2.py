@@ -50,6 +50,8 @@
 
     Analyze the unusual data from the engineers. How many reports are safe?
 
+        --> 282 <--
+
     ------------------------------------------------------------
     Your puzzle answer was 282.
 
@@ -141,8 +143,8 @@ def recheck_row(row, verbose=0) -> bool | None:
     return now_safe
 
 
-def day_2_part_2():
-    """day_2_part_2()"""
+def part_2():
+    """part_2()"""
     # Import data to dataframe
     df = import_data(2, example=False)
     # Count the number of safe rows (reports)
@@ -177,7 +179,7 @@ def day_2_part_2():
 
 def main():
     """main() - a redundant level of indirection..."""
-    day_2_part_2()
+    part_2()
 
 
 if __name__ == "__main__":
