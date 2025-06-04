@@ -1,6 +1,8 @@
 # coding: utf-8
 """
-    get_diags
+    day_4_count_xmas
+        an alternative and simpler (but slower?)
+        implementation of day_4_xmas
 
     author
         mier
@@ -11,6 +13,7 @@
 
 import numpy as np
 import pandas as pd
+
 
 def upper_right_right_to_left(df: pd.DataFrame):
     """

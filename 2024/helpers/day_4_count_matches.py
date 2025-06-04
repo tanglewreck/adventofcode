@@ -2,29 +2,22 @@
     count_matches
 
 """
-# xpylint: disable=too-many-locals
-# xpylint: disable=too-many-statements
-# xpylint: disable=unused-argument
-# xpylint: disable=unused-import
-# pylint: disable=unused-variable
-# xpylint: disable=undefined-variable
 
 import re
-import typing  # pylint: disable=unused-import
-from typing import Optional  # pylint: disable=unused-import
-from typing import List  # pylint: disable=unused-import
-from typing import Tuple  # pylint: disable=unused-import
+# from typing import Optional  # pylint: disable=unused-import
+# from typing import List  # pylint: disable=unused-import
+# from typing import Tuple  # pylint: disable=unused-import
 
-import numpy as np  # pylint: disable=unused-import
 import pandas as pd
-from . day_4_diags import extract_diagonals
+from . day_4_extract_diagonals import extract_diagonals
 
 # Constants
 SEARCH_STRING = "XMAS"
 
+
 def count_matches(df: pd.DataFrame,
-                       search_string: str = SEARCH_STRING,
-                       verbose: int = 0) -> int:
+                  search_string: str = SEARCH_STRING,
+                  verbose: int = 0) -> int:
     """
         Search for a string embedded in the row, columns, and diagonals
         of a dataframe
@@ -36,14 +29,9 @@ def count_matches(df: pd.DataFrame,
         print(f"n_cols = {n_cols}")
     if not search_string:
         search_string = "xmas"
-    # Allow the data to contain '_', '.', ',', ' ',
-    # and ignore them in the search.
+    # Allow data to contain '_', '.', ',', ' ', and ignore them in the search
     r = re.compile(r'[_., ]*'.join(re.split('', search_string)[1:-1]), re.IGNORECASE)
     rr = re.compile(r'[_., ]*'.join(re.split('', search_string[::-1])[1:-1]), re.IGNORECASE)
-    # r = re.compile(r'x\s*m\s*a\s*s', re.IGNORECASE)
-    # rr = re.compile(r's\s*a\s*m\s*x', re.IGNORECASE)
-    #r = re.compile(r'x[_\s]*m[_\s]*a[_\s]*s', re.IGNORECASE)
-    #rr = re.compile(r's[_\s]*a[_\s]*m[_\s]*x', re.IGNORECASE)
     # Total number of hits
     n_matches_tot = 0
     # Search rows

@@ -120,37 +120,58 @@
 
 
 """
-import os
-import sys
+import argparse
+from pathlib import Path
+from helpers.day_4_xmas import x_mas_list, x_mas_pd, x_mas_np
 from utils.as_dataframe import as_dataframe
-from helpers import __DATADIR__
-from helpers.day_4_pt2 import x_mas_list, x_mas_pd, x_mas_np
+from utils.get_data_path import get_data_path
+from utils.verbose_msg import verbose_msg
 
-# These determine, e.g., which data file is read
-__DAYNUM__ = "4"  # this is day 4
-__PART__ = "2"  # this is part 2 of day 4
+# These determine, which data file is read
+__DAYNUM__ = 4  # this is day 4
+__PART__ = 2  # this is part 2 of day 4
+
+
+def part_1(example: bool = False, verbose: int = 0):
+    """
+        part_1() - for now, just a wrapper around part_2()
+    """
+    part_2(example, verbose)
+
+
+def part_2(example: bool = False, verbose: int = 0):
+    """part_2()"""
+    data_path: Path = get_data_path(__DAYNUM__, part=__PART__, example=example)
+    verbose_msg(f"using path: {data_path}", 1, verbose)
+    df = as_dataframe(data_path, save=False)
+    verbose_msg(f"{df}", 1, verbose)
+    # Search for target string and print results
+    print("using lists:", x_mas_list(df))
+    print("using np.asarray:", x_mas_np(df))
+    print("using the pd.DataFrame:", x_mas_pd(df))
 
 
 def main():
-    """main"""
-    # Default data input
-    input_file = f"{__DATADIR__}/day_{__DAYNUM__}_data"
-    # Check for a commandline argument and use that as
-    # the path to the file containing the input data
-    try:
-        input_file = sys.argv[1]
-        if not os.access(input_file, os.R_OK):
-            raise OSError
-    except OSError as exception:
-        raise SystemExit("No such file") from exception
-    except IndexError:
-        pass
-    # Import data
-    df = as_dataframe(input_file, save=False)
-    # Search for target string and print results
-    print("using lists:", x_mas_list(df))
-    print("using np.asarray():", x_mas_np(df))
-    print("using the pd.DataFrame:", x_mas_pd(df))
+    """main()"""
+    parser = argparse.ArgumentParser(description=f"aoc 2024 day {__DAYNUM__}",
+                                     prog=f"day_{__DAYNUM__}",
+                                     add_help=True)
+    parser.add_argument('--part', type=int, default=1,
+                        choices=[1, 2],
+                        help='part number (1 or 2)')
+    parser.add_argument('--example', default=False,
+                        action='store_true',
+                        help='use example datafile')
+    parser.add_argument('--input', type=argparse.FileType('r'),
+                        help='not used)')
+    parser.add_argument('--verbose', type=int, default=0,
+                        choices=[0, 1, 2],
+                        help='get diagnostics')
+    args = parser.parse_args()
+    if args.part == 1:
+        part_2(args.example, args.verbose)
+    else:
+        part_2(args.example, args.verbose)
 
 
 if __name__ == "__main__":

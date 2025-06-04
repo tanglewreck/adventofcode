@@ -6,14 +6,18 @@ import pandas as pd
 import numpy as np
 from . import __DATADIR__
 
+
+__all__ = ["x_mas_list", "x_mas_pd", "x_mas_np"]
+
 # These determine, e.g., which data file is read
 __DAYNUM__ = "day_4"  # this is day 4
 __PART__ = "2"  # this is part 2 of day 4
 
-DF4E = pd.read_csv(f"{__DATADIR__}/day_4_part_2_data_example.csv", header=None)
-DF4F = pd.read_csv(f"{__DATADIR__}/day_4_data.csv", header=None)
+DF4E = pd.read_csv(f"{__DATADIR__}/day_4_part_2_example.csv", header=None)
+DF4F = pd.read_csv(f"{__DATADIR__}/day_4_part_1.csv", header=None)
 
 
+# pylint: disable=line-too-long
 def x_mas_pd(df: pd.DataFrame | None):
     """
         Find X-MAS patterns, pandas version

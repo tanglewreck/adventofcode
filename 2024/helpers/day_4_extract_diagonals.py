@@ -14,16 +14,15 @@ __author__ = "mier"
 __version__ = "0.4.42"
 
 
-# pylint: disable=unused-import
-from typing import Any, Optional, TYPE_CHECKING
-# pylint: enable=unused-import
 import numpy as np
 import pandas as pd
 
 
 def lower_left_diagonals(df: pd.DataFrame | None = None,
-                         start: int | None = None,
-                         stop: int | None = -1) -> list:  # mypy: no-operator
+                         # start: int | None = None,
+                         # stop: int | None = -1) -> list:  # mypy: no-operator
+                         start: int = 0,
+                         stop: int = -1) -> list:  # mypy: no-operator
     """
         lower_left_diagonals():
             Extract diagonals starting at the
@@ -33,13 +32,15 @@ def lower_left_diagonals(df: pd.DataFrame | None = None,
             for k = (n-1), (n-1), ... , 0.
 
     """
+    # convert to np.ndarray
     d = np.asarray(df)
     # Flip the array left-right so that we
     # can use np.diagonal().
     dflip = np.fliplr(d)
-    n = len(df)  # mypy: no-arg-type
+    n = len(d)  # mypy: no-arg-type
     # Amend start position (row)
-    if start is None:
+    # if start is None:
+    if start == 0:
         start = n - 1
     diags = []
     for k in range(start, stop, -1):
@@ -100,15 +101,15 @@ def upper_right_diagonals(df: pd.DataFrame | None = None,
             k = 4, ... , n - 1.
 
     """
+    # convert to np.ndarray
+    d = np.asarray(df)
     # Get length of the data
-    n = len(df)
+    n = len(d)  # using np.asarray to make linters shut up
     # Amend start and stop positions (rows)
     if start is None:
         start = 1
     if stop is None:
-        stop = len(df)
-    # convert to np.ndarray
-    d = np.asarray(df)
+        stop = n
     # then flip it left-right
     # (equivalent to [r[::-1] for r in d]).
     dflip = np.fliplr(d)
@@ -147,12 +148,13 @@ def upper_left_diagonals(df: pd.DataFrame | None = None,
             k = 4, ... , n - 1.
 
     """
+    # convert to np.ndarray()
     d = np.asarray(df)
     # Amend stop position (row)
     if start is None:
         start = 1
     if stop is None:
-        stop = len(df)
+        stop = len(d)  # using np.asarray to make linters shut up
     diags = []
     for k in range(start, stop):
         diag = d[:k, :k][::-1].diagonal()[::-1]
