@@ -189,7 +189,7 @@ def main():
                         action='store_true',
                         help='use example datafile')
     parser.add_argument('--input', type=argparse.FileType('r'),
-                        help='not used)')
+                        help='not used')
     parser.add_argument('--verbose', type=int, default=0,
                         choices=[0, 1, 2],
                         help='get diagnostics')
