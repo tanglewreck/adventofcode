@@ -29,5 +29,5 @@ def get_data_path(daynum: int, part: int, example: bool = False) -> Path:
         if not os.access(data_path, os.R_OK):
             raise OSError
     except OSError as exception:
-        raise SystemExit(2, f"No such file: {data_path}") from exception
+        raise SystemExit(2, f"{__name__}: No such file: {data_path}") from exception
     return data_path
