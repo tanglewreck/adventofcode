@@ -123,21 +123,17 @@
 # from collections import defaultdict
 import argparse
 import re
-import numpy as np
-# from collections import defaultdict
-# from typing import DefaultDict, List  # , Tuple
-# from helpers.day_5_rules_and_updates import get_rules_and_updates
-# from helpers.day_5_fix import fix_updates
-# from helpers.day_5_valid import update_is_valid
-# from helpers.day_5_verify import verify_updates
+from typing import List, Tuple
 from utils.get_data_path import get_data_path
-# from utils.verbose_msg import verbose_msg
+from utils.verbose_msg import verbose_msg
 
 # Constants
 __DAYNUM__ = 6  # this is us
 __PART__ = 1
 
 UP, RIGHT, DOWN, LEFT = '^', '>', 'v', '<'
+DIRECTIONS: Tuple[str, str, str, str] = (UP, RIGHT, DOWN, LEFT)
+OUTSIDE: Tuple[int, int] = (-1, -1)
 
 
 def part_1(example: bool, verbose: int = 0):
@@ -167,7 +163,74 @@ def part_1(example: bool, verbose: int = 0):
                 - turn right
           - update counter
     """
-    def walk(position, direction, verbose=verbose):
+    def get_data() -> List[str]:
+        """
+            read data
+            return start-position
+        """
+        data: List[str] = []
+        data_path = get_data_path(6, 1, example=example)
+        try:
+            with open(data_path, 'r', encoding="UTF-8") as fp:
+                data = fp.read()[:-1].split("\n")
+        except OSError as exception:
+            raise SystemExit(1, repr(exception)) from exception
+        return data
+
+    def get_start_position() -> Tuple[int, int]:
+        startrow, startcol = OUTSIDE  # (-1, -1)
+        direction: str = UP
+        for ind, row in enumerate(data):
+            rowstr = "".join(row)
+            verbose_msg(f"{ind}:\t{rowstr}", 2, verbose)
+            try:
+                # str.index() will raise a ValueError if the
+                # search-string is not found
+                startcol = rowstr.index(direction)
+            except ValueError:
+                pass
+            if not startcol == -1:
+                startrow = ind
+                return (startrow, startcol)
+        return OUTSIDE
+
+    def check_for_obstacles(position) -> bool:
+        """
+            check if there is an obstacle at 'positon' (which is
+            a tuple = (row, col)
+        """
+        row, col = position
+        assert 0 <= row < len(data)
+        assert 0 <= col < len(data)
+        return bool(data[row][col] == "#")
+
+    def check_for_boundary(position) -> bool:
+        """
+            check if we're outside the perimeter
+        """
+        row, col = position
+        n = len(data)
+        assert -1 <= row <= n
+        assert -1 <= col <= n
+        return row in (-1, n) or col in (-1, n)
+
+    def turn_right(direction) -> str:
+        """
+            change direction clockwise:
+                UP --> RIGHT --> DOWN --> LEFT --> UP
+        """
+        assert direction in DIRECTIONS
+        if direction is UP:
+            return RIGHT
+        if direction is RIGHT:
+            return DOWN
+        if direction is DOWN:
+            return LEFT
+        if direction is LEFT:
+            return UP
+        return str(direction)
+
+    def walk(position, direction, verbose=verbose) -> Tuple[int, int]:
         """
             take a step in the indicated direction
             return the new position
@@ -175,9 +238,9 @@ def part_1(example: bool, verbose: int = 0):
             the current position
         """
         row, col = position
-        assert 0 <= row <= len(data)
-        assert direction in (UP, DOWN, LEFT, RIGHT)
-        assert 0 <= col <= len(data)
+        assert 0 <= row < len(data)
+        assert 0 <= col < len(data)
+        assert direction in DIRECTIONS
         if direction is UP:
             new_position = row - 1, col
         elif direction is DOWN:
@@ -189,58 +252,81 @@ def part_1(example: bool, verbose: int = 0):
         else:
             new_position = (-1, -1)
         if verbose > 0:
-            print("direction is =", direction)
-            print("new_position =", new_position)
+            verbose_msg(f"moving {direction}", 1, verbose)
+            verbose_msg(f"new_position = {new_position}", 1, verbose)
         return new_position
 
-    def get_data():
+    def update_data(row, col) -> List[str]:
         """
-            read data
-            return start-position
+            set position (row, col) to 'X'
         """
-        # data: list[str] = []
-        data = []
-        data_path = get_data_path(6, 1, example=example)
-        try:
-            with open(data_path, 'r', encoding="UTF-8") as fp:
-                data = fp.read()[:-1].split("\n")
-        except OSError as exception:
-            raise SystemExit(1, repr(exception)) from exception
-        return data
+        # don't go outside the matrix
+        assert 0 <= row < len(data)
+        assert 0 <= col < len(data)
+        # initialise temp-array
+        tmp_data = []
+        # put an 'X' at the correct position
+        for k, row_string in enumerate(data):
+            # split the row-string
+            split_row = re.split(r'', row_string)[1:-1]
+            # if on the correct row...
+            if k == row:
+                split_row[col] = 'X'
+            # put the row-string together again
+            tmp_data.append("".join(split_row))
+        # return the updated data
+        return tmp_data
 
-    def get_position():
-        startcol = -1
-        startrow = -1
-        direction = UP
-        for ind, _ in enumerate(data):
-            rowstr = "".join(data[ind])
-            if verbose > 1:
-                print(f"{ind}:\t{rowstr}")
-            try:
-                # str.index() will raise a ValueError if the
-                # search-string is not found
-                startcol = "".join(data[ind]).index(direction)
-            except ValueError:
-                pass
-            if startcol != -1:
-                if verbose > 1:
-                    print(f"found {direction} on row {ind} at pos {startcol}")
-                startrow = ind
-                return (startrow, startcol)
-        return (-1, -1)
-
+    # here we go...
     print("= " * 10)
     print(" PART 1")
     print("= " * 10)
-    data = get_data()
-    position = get_position()
-    if verbose > 0:
-        print(f"initial position = {position}")
-    new_position = walk(position, UP)
-    new_position = walk(new_position, DOWN)
-    new_position = walk(new_position, LEFT)
-    new_position = walk(new_position, RIGHT)
-    print(new_position)
+    #
+    data: List[str] = get_data()
+    # get initial position
+    initial_position: Tuple[int, int] = get_start_position()
+    r, c = initial_position
+    # get the initial direction from the data array
+    # (initial direction is always UP)
+    initial_direction = data[r][c]
+    # diagnostics
+    verbose_msg("- " * 10, 1, verbose)
+    verbose_msg(f"INITIAL POSITION = {initial_position}", 1, verbose)
+    verbose_msg(f"INITIAL DIRECTION = {initial_direction}", 1, verbose)
+    verbose_msg("- " * 10, 1, verbose)
+    # initialise counter
+    n_unique_steps = 0
+    # initialise position and direction
+    position = initial_position
+    direction = initial_direction
+    # loop until we reach the edge of the matrix
+    while True:
+        # save position
+        old_position = position
+        # get new position on step ahead in the current direction
+        position = walk(position, direction)
+        # if we've reach the boundary, we're done
+        if check_for_boundary(position):
+            verbose_msg(f"hit the boundary at {position}", 1, verbose)
+            break
+        if check_for_obstacles(position):
+            # we've encountered an obstacle ("#");
+            # back up one step in the opposite direction,
+            # turn right and continue walking
+            verbose_msg(f"stop at {position}, moving {direction}", 1, verbose)
+            verbose_msg(f"backing up to {old_position}), turning", 1, verbose)
+            new_direction = turn_right(direction)
+            position = old_position
+            direction = new_direction
+        else:
+            # no obstacle found; now check if we've already been here
+            row, col = position
+            if data[row][col] != 'X':
+                data = update_data(row, col)
+                n_unique_steps += 1
+            verbose_msg(f"n_unique_steps = {n_unique_steps}", 1, verbose)
+    # And we're out!
+    print(f"n_unique_steps = {n_unique_steps}")
 
 
 def part_2(example: bool, verbose: int = 0):
