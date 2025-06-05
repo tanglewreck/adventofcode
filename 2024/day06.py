@@ -1,7 +1,7 @@
 # vim: set numberwidth=4 number noignorecase :
 """
 
-    	--- Day 6: Guard Gallivant ---
+        --- Day 6: Guard Gallivant ---
 
     The Historians use their fancy device again, this time to whisk you all
     away to the North Pole prototype suit manufacturing lab... in the year
@@ -113,8 +113,8 @@
 
     In this example, the guard will visit 41 distinct positions on your map.
 
-    Predict the path of the guard. How many distinct positions will the guard visit
-    before leaving the mapped area?
+    Predict the path of the guard. How many distinct positions will the guard
+    visit before leaving the mapped area?
 
 
 
@@ -123,6 +123,7 @@
 # from collections import defaultdict
 import argparse
 import re
+import numpy as np
 # from collections import defaultdict
 # from typing import DefaultDict, List  # , Tuple
 # from helpers.day_5_rules_and_updates import get_rules_and_updates
@@ -136,39 +137,110 @@ from utils.get_data_path import get_data_path
 __DAYNUM__ = 6  # this is us
 __PART__ = 1
 
+UP, RIGHT, DOWN, LEFT = '^', '>', 'v', '<'
+
 
 def part_1(example: bool, verbose: int = 0):
     """
         part 1()
+
+    --------
+    The Plan
+    --------
+      - get data
+      - find startposition
+      - determine direction (it's UP)
+      REPEAT until REACHES A WALL:
+          - take one step forward
+            in the current direction
+            (take_a_step(cur_pos, direction) -> new_pos)
+          - if there's a wall ahead
+              (if current row == 0 and we're moving up, or
+               if current row = -1 and we're moving down, or
+               if current col == 0 and we're moving left, or
+               if current col == -1 and we're moving right)
+                  current_col ))
+                - update the step-counter
+                - set the break-the-loop flag
+          - if the step wasn't successful:
+                - do not update counter
+                - turn right
+          - update counter
     """
+    def walk(position, direction, verbose=verbose):
+        """
+            take a step in the indicated direction
+            return the new position
+            if we encounter an obstruction, return
+            the current position
+        """
+        row, col = position
+        assert 0 <= row <= len(data)
+        assert direction in (UP, DOWN, LEFT, RIGHT)
+        assert 0 <= col <= len(data)
+        if direction is UP:
+            new_position = row - 1, col
+        elif direction is DOWN:
+            new_position = row + 1, col
+        elif direction is LEFT:
+            new_position = row, col - 1
+        elif direction is RIGHT:
+            new_position = row, col + 1
+        else:
+            new_position = (-1, -1)
+        if verbose > 0:
+            print("direction is =", direction)
+            print("new_position =", new_position)
+        return new_position
+
+    def get_data():
+        """
+            read data
+            return start-position
+        """
+        # data: list[str] = []
+        data = []
+        data_path = get_data_path(6, 1, example=example)
+        try:
+            with open(data_path, 'r', encoding="UTF-8") as fp:
+                data = fp.read()[:-1].split("\n")
+        except OSError as exception:
+            raise SystemExit(1, repr(exception)) from exception
+        return data
+
+    def get_position():
+        startcol = -1
+        startrow = -1
+        direction = UP
+        for ind, _ in enumerate(data):
+            rowstr = "".join(data[ind])
+            if verbose > 1:
+                print(f"{ind}:\t{rowstr}")
+            try:
+                # str.index() will raise a ValueError if the
+                # search-string is not found
+                startcol = "".join(data[ind]).index(direction)
+            except ValueError:
+                pass
+            if startcol != -1:
+                if verbose > 1:
+                    print(f"found {direction} on row {ind} at pos {startcol}")
+                startrow = ind
+                return (startrow, startcol)
+        return (-1, -1)
+
     print("= " * 10)
     print(" PART 1")
     print("= " * 10)
-    if example or verbose:
-        print("spam")
-    data_path = get_ 
-    #
-    # The Plan
-    #   - get data
-    #   -
-    #   - find startposition
-    #   - determine direction (it's UP)
-    #   REPEAT until REACHES A WALL:
-    #       - take one step forward
-    #         in the current direction
-    #         (take_a_step(cur_pos, direction) -> new_pos)
-    #       - if there's a wall ahead
-    #           (if current row == 0 and we're moving up, or
-    #            if current row = -1 and we're moving down, or
-    #            if current col == 0 and we're moving left, or
-    #            if current col == -1 and we're moving right)
-    #               current_col ))
-    #             - update the step-counter
-    #             - set the break-the-loop flag
-    #       - if the step wasn't successful:
-    #             - do not update counter
-    #             - turn right
-    #       - update counter
+    data = get_data()
+    position = get_position()
+    if verbose > 0:
+        print(f"initial position = {position}")
+    new_position = walk(position, UP)
+    new_position = walk(new_position, DOWN)
+    new_position = walk(new_position, LEFT)
+    new_position = walk(new_position, RIGHT)
+    print(new_position)
 
 
 def part_2(example: bool, verbose: int = 0):
