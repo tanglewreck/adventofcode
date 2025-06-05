@@ -124,6 +124,7 @@
 import argparse
 import re
 import time
+from collections import defaultdict
 from typing import List, Tuple
 from utils.get_data_path import get_data_path
 from utils.verbose_msg import verbose_msg
@@ -257,27 +258,27 @@ def part_1(example: bool, verbose: int = 0):
             verbose_msg(f"new_position = {new_position}", 1, verbose)
         return new_position
 
-    def update_data(row, col) -> List[str]:
-        """
-            set position (row, col) to 'X'
-        """
-        # don't go outside the matrix
-        assert 0 <= row < len(data)
-        assert 0 <= col < len(data)
-        # initialise temp-array
-        tmp_data = []
-        # put an 'X' at the correct position
-        for k, row_string in enumerate(data):
-            # split the row-string
-            split_row = re.split(r'', row_string)[1:-1]
-            # if on the correct row...
-            if k == row:
-                split_row[col] = 'X'
-            # put the row-string together again
-            tmp_data.append("".join(split_row))
-        # return the updated data
-        return tmp_data
-
+#     def update_data(row, col) -> List[str]:
+#         """
+#             set position (row, col) to 'X'
+#         """
+#         # don't go outside the matrix
+#         assert 0 <= row < len(data)
+#         assert 0 <= col < len(data)
+#         # initialise temp-array
+#         tmp_data = []
+#         # put an 'X' at the correct position
+#         for k, row_string in enumerate(data):
+#             # split the row-string
+#             split_row = re.split(r'', row_string)[1:-1]
+#             # if on the correct row...
+#             if k == row:
+#                 split_row[col] = 'X'
+#             # put the row-string together again
+#             tmp_data.append("".join(split_row))
+#         # return the updated data
+#         return tmp_data
+#
     # here we go...
     print("= " * 10)
     print(" PART 1")
@@ -300,6 +301,8 @@ def part_1(example: bool, verbose: int = 0):
     # initialise position and direction
     position = initial_position
     direction = initial_direction
+    # visited: defaultdict[tuple[int, int], int] = {}
+    visited: dict[tuple[int, int], int] = {}
     # loop until we reach the edge of the matrix
     while True:
         # save position
@@ -322,8 +325,10 @@ def part_1(example: bool, verbose: int = 0):
         else:
             # no obstacle found; now check if we've already been here
             row, col = position
-            if data[row][col] != 'X':
-                data = update_data(row, col)
+            if position in visited:
+                visited[position] += 1
+            else:
+                visited[position] = 1
                 n_unique_steps += 1
             verbose_msg(f"n_unique_steps = {n_unique_steps}", 1, verbose)
     # And we're out!
