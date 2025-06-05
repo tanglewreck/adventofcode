@@ -123,6 +123,7 @@
 # from collections import defaultdict
 import argparse
 import re
+import time
 from typing import List, Tuple
 from utils.get_data_path import get_data_path
 from utils.verbose_msg import verbose_msg
@@ -285,10 +286,10 @@ def part_1(example: bool, verbose: int = 0):
     data: List[str] = get_data()
     # get initial position
     initial_position: Tuple[int, int] = get_start_position()
-    r, c = initial_position
+    row, col = initial_position
     # get the initial direction from the data array
     # (initial direction is always UP)
-    initial_direction = data[r][c]
+    initial_direction = data[row][col]
     # diagnostics
     verbose_msg("- " * 10, 1, verbose)
     verbose_msg(f"INITIAL POSITION = {initial_position}", 1, verbose)
@@ -347,6 +348,9 @@ def main():
     parser.add_argument('--part', type=int, default=1,
                         choices=[1, 2],
                         help='part number (1 or 2)')
+    parser.add_argument('--time', default=False,
+                        action='store_true',
+                        help='time it')
     parser.add_argument('--example', default=False,
                         action='store_true',
                         help='use example datafile')
@@ -357,7 +361,11 @@ def main():
                         help='get diagnostics')
     args = parser.parse_args()
     if args.part == 1:
+        pre = time.time()
         part_1(args.example, args.verbose)
+        post = time.time()
+        if args.time:
+            print(f"elapsed = {(post - pre):.4f}s")
     else:
         part_2(args.example, args.verbose)
 
