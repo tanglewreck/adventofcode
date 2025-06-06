@@ -81,17 +81,18 @@
 """
 
 
-# pylint: disable=unused-import
-# import numpy as np
-# import pandas as pd
-# pylint: enable=unused-import
-# import re
+import argparse
+import time
 from string import digits
+from utils import get_data_path
+from utils.verbose_msg import verbose_msg
 
+
+__DAYNUM__ = 3
 
 # TEST_DATA = "xyxmul(123,456)xyzmuöl(38),.mul(1,2)mul(3,3333)sjsjX"
-TEST_DATA = "xyxmul(100,456)xyzmuöl(38),.mul(1,2)mul(3,10)sjsjX"
-TEST_DATA_2 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
+# TEST_DATA_2 = "xyxmul(100,456)xyzmuöl(38),.mul(1,2)mul(3,10)sjsjX"
+# TEST_DATA_3 = "xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"
 
 
 def mul(x: int | float, y: int | float) -> int | float:
@@ -105,13 +106,12 @@ def get_token(data_string: str, index: int, length: int) -> str:
             Return a substring of length 'length' beginning at 'index'.
     """
     try:
-        return data_string[index : index + length]
+        return data_string[index: index + length]
     except IndexError:
         return ""
 
-# pylint: disable=too-many-branches
-def parse_data(data: str = TEST_DATA, do_dont: bool = False,
-               verbose: int = 0) -> list:
+
+def parse_data(data: str, do_dont: bool = False, verbose: int = 0) -> list:
     """
         parse_data()
             Extracts valid tokens (substrings of the form 'mul(x,y)', where x
@@ -130,12 +130,10 @@ def parse_data(data: str = TEST_DATA, do_dont: bool = False,
         try:
             # Check for 'do()' and "don't()"tokens
             if get_token(data, index, 4) == "do()":
-                if verbose > 0:
-                    print("found a 'do()' token")
+                verbose_msg("found a 'do()' token", 2, verbose)
                 do = True
             if get_token(data, index, 7) == "don't()":
-                if verbose > 0:
-                    print("found a 'don't()' token")
+                verbose_msg("found a 'don't()' token", 2, verbose)
                 do = False
             # Set token-length
             token_length = 4
@@ -176,58 +174,98 @@ def parse_data(data: str = TEST_DATA, do_dont: bool = False,
                     if do or not do_dont:
                         valid_tokens.append(token)
                     token_length += 1
-                    if verbose > 0:
-                        print(token)
+                    verbose_msg(str(token), 2, verbose)
             index += len(token)
         except IndexError:
             pass
-    if verbose > 0:
-        print(valid_tokens)
+    verbose_msg(str(valid_tokens), 2, verbose)
     return valid_tokens
 
 
-def main() -> None:
-    """main()"""
-# pylint: disable=unused-variable
+def part_1(example: bool = False, verbose: int = 0) -> int | None:
+    """part_1()"""
     # Import data
-    fdata = "data/day_3_data"
-    fdata_example = "data/day_3_data_example"
-    fdata_example_2 = "data/day_3_data_example_part_2"
+    data_path = get_data_path(daynum=__DAYNUM__, part=1, example=False)
+    if example:
+        data_path = get_data_path(daynum=__DAYNUM__, part=1, example=True)
     try:
-        with open(fdata_example, encoding="utf-8") as fp:
-            example_data = fp.read()
-        with open(fdata_example_2, encoding="utf-8") as fp:
-            example_data_2 = fp.read()
-        with open(fdata, encoding="utf-8") as fp:
-            full_data = fp.read()
-        data = example_data
-        data = example_data_2
-        data = full_data
-# pylint: enable=unused-variable
+        with open(data_path, encoding="utf-8") as fp:
+            data = fp.read()
     except OSError as exception:
         print(repr(exception))
-        raise SystemExit(1) from exception
-
+        return None
+    verbose_msg("part 1", 1, verbose)
     # Get tokens
-    tokens = parse_data(data, do_dont=False, verbose=0)
+    tokens = parse_data(data, do_dont=False, verbose=verbose)
     token_sum = 0
     # pylint: disable=eval-used
     for token in tokens:
         token_sum += eval(token)
-    print("do/dont = False")
-    print(f"Sum of mul()-tokens = {token_sum}")
-    print(f"Number of mul()-tokens = {len(tokens)}")
-    print()
+    verbose_msg("do/dont = False", 1, verbose)
+    verbose_msg(f"number of mul()-tokens = {len(tokens)}", 1, verbose)
+    verbose_msg(f"sum of mul()-tokens = {token_sum}", 1, verbose)
+    return token_sum
 
+
+def part_2(example: bool = False, verbose: int = 0) -> int | None:
+    """part_2() -- just a wrapper"""
+    # Import data
+    # NB same full data as for part 1
+    data_path = get_data_path(daynum=__DAYNUM__, part=1, example=False)
+    if example:
+        data_path = get_data_path(daynum=__DAYNUM__, part=2, example=True)
+    try:
+        with open(data_path, encoding="utf-8") as fp:
+            data = fp.read()
+    except OSError as exception:
+        print(repr(exception))
+        return None
+    verbose_msg("part 2", 1, verbose)
     # Get tokens
     tokens = parse_data(data, do_dont=True, verbose=0)
     token_sum = 0
     # pylint: disable=eval-used
     for token in tokens:
         token_sum += eval(token)
-    print("do/dont = True")
-    print(f"Sum of mul()-tokens = {token_sum}")
-    print(f"Number of mul()-tokens = {len(tokens)}")
+    verbose_msg("do/dont = True", 1, verbose)
+    verbose_msg(f"number of mul()-tokens = {len(tokens)}", 1, verbose)
+    verbose_msg(f"sum of mul()-tokens = {token_sum}", 1, verbose)
+    return token_sum
+
+
+def main():
+    """main"""
+    parser = argparse.ArgumentParser(description=f"aoc 2024 day {__DAYNUM__}",
+                                     prog=f"day_{__DAYNUM__}",
+                                     add_help=True)
+    parser.add_argument('--part', type=int, default=1,
+                        choices=[1, 2],
+                        help='part number (1 or 2)')
+    parser.add_argument('--time', default=False,
+                        action='store_true',
+                        help='time it')
+    parser.add_argument('--example', default=False,
+                        action='store_true',
+                        help='use example datafile')
+    parser.add_argument('--input', type=argparse.FileType('r'),
+                        help='not used')
+    parser.add_argument('--verbose', type=int, default=0,
+                        choices=[0, 1, 2],
+                        help='get diagnostics')
+    args = parser.parse_args()
+    if args.part == 1:
+        pre = time.time()
+        token_sum = part_1(args.example, args.verbose)
+        post = time.time()
+    else:
+        pre = time.time()
+        token_sum = part_2(args.example, args.verbose)
+        post = time.time()
+    if args.time:
+        print(f"token_sum = {token_sum}", end="\t")
+        print(f"({(post - pre):.4f}s)")
+    else:
+        print(f"token_sum = {token_sum}")
 
 
 if __name__ == "__main__":
