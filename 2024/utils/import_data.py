@@ -26,7 +26,6 @@ def import_data(daynum: int, part: int = 1, example=False) -> pd.DataFrame:
             temp_df.fillna(0.0, inplace=True)
             # Convert to int
             temp_df = temp_df.astype(int)
-            # temp_df.to_csv(fname + "_padded", sep=",", index=None)
             return temp_df
     except (OSError, pd.errors.ParserError) as exception:
         print(repr(exception))
