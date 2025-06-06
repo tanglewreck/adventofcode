@@ -5,22 +5,29 @@
 """
 
 import os
+from typing import NewType
+from pandas import DataFrame
 from . as_dataframe import as_dataframe
 from . export_data import export_data
 from . import_data import import_data
 from . get_data_path import get_data_path
 from . verbose_msg import verbose_msg
+from . data_handler import DataHandler
+from . __settings__ import __DATADIR__
+from . __settings__ import __PREFIX__
+from . __settings__ import __DATA_PREFIX__
+# from . data_handler import DataHandler as dh
 
-__version__ = "0.5.1"
+__version__ = "2025.06.06_02"
 __author__ = "mier"
-__name__ = "utils"  # pylint: disable=redefined-builtin
 
-__BASEDIR__ = f"{os.environ['HOME']}/Proj/adventofcode/2024"
-__DATADIR__ = f"{__BASEDIR__}/data"  # data directory path
-__PREFIX__ = "day"
+ImportDataList = NewType("ImportDataList", list[list[int]])
+ImportDataDf = NewType("ImportDataDf", DataFrame)
 
-__all__ = ["__DATADIR__",
-           "__PREFIX__",
+__all__ = ["__PREFIX__",
+           "__DATADIR__",
+           "__DATA_PREFIX__",
+           "DataHandler",
            "as_dataframe",
            "export_data",
            "get_data_path",

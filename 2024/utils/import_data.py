@@ -8,7 +8,7 @@ from utils.get_data_path import get_data_path
 __all__: list[str] = ["import_data"]
 
 
-def import_data(daynum: int, part: int = 1, example=False) -> pd.DataFrame:
+def import_data(day: int, part: int = 1, example=False) -> pd.DataFrame:
     """
         import_data
             - Reads a comma-separated datafile.
@@ -18,7 +18,7 @@ def import_data(daynum: int, part: int = 1, example=False) -> pd.DataFrame:
               where n is an integer and the '_example' suffix
               is optional.
     """
-    data_path: Path = get_data_path(daynum, part=part, example=example)
+    data_path: Path = get_data_path(day, part=part, example=example)
     try:
         with open(data_path) as fp:
             temp_df = pd.read_csv(fp, sep=",", dtype=float)

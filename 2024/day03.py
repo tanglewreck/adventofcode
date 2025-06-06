@@ -84,7 +84,8 @@
 import argparse
 import time
 from string import digits
-from utils import get_data_path
+# from utils import get_data_path
+from utils.data_handler import DataHandler as dh
 from utils.verbose_msg import verbose_msg
 
 
@@ -118,29 +119,28 @@ def parse_data(data: str, do_dont: bool = False, verbose: int = 0) -> list:
             and y are integers) from a string.
 
             Returns a list of token-strings.
+
+            NOTE: this could be done way much easier by using regexps... >:-^
     """
     valid_tokens = []  # A list that will hold valid tokens ('mul(x,y)'-substrings)
-    valid = True  # Indicator that a token is (still) valid
-    eof = False  # flag that indicates whether we have reached end-of-file (end-of-data)
     index = 0  # index into to the data
-    # do_token_length = 4  # length of a 'do()' token
-    # dont_token_length = 7  # length of a "don't()" token
-    do = True
-    while valid and not eof:
+    do_token_length = 4  # length of a 'do()' token
+    dont_token_length = 7  # length of a "don't()" token
+    do = True  # need to set this so we can test it further down
+    while True:
         try:
             # Check for 'do()' and "don't()"tokens
-            if get_token(data, index, 4) == "do()":
+            if get_token(data, index, do_token_length) == "do()":
                 verbose_msg("found a 'do()' token", 2, verbose)
                 do = True
-            if get_token(data, index, 7) == "don't()":
+            if get_token(data, index, dont_token_length) == "don't()":
                 verbose_msg("found a 'don't()' token", 2, verbose)
                 do = False
-            # Set token-length
+            # Set token-length ("mul(")
             token_length = 4
             # Check that we do not go beoynd the length of the data
             if index + token_length > len(data):
-                eof = True
-                continue
+                break
             # Get next token
             token = get_token(data, index, token_length)
             # If token does not match the beginning of a 'mul(x,y)' operation
@@ -174,63 +174,58 @@ def parse_data(data: str, do_dont: bool = False, verbose: int = 0) -> list:
                     if do or not do_dont:
                         valid_tokens.append(token)
                     token_length += 1
-                    verbose_msg(str(token), 2, verbose)
+                    verbose_msg(str(token), 3, verbose)
             index += len(token)
         except IndexError:
-            pass
-    verbose_msg(str(valid_tokens), 2, verbose)
+            print("SHOULDN'T GET HERE!")
+    verbose_msg(str(valid_tokens), 3, verbose)
     return valid_tokens
 
 
-def part_1(example: bool = False, verbose: int = 0) -> int | None:
-    """part_1()"""
+def part_1_2(part: int = 1, example: bool = False, verbose: int = 0) -> int | None:
+    """part_1_2()"""
     # Import data
-    data_path = get_data_path(daynum=__DAYNUM__, part=1, example=False)
-    if example:
-        data_path = get_data_path(daynum=__DAYNUM__, part=1, example=True)
     try:
-        with open(data_path, encoding="utf-8") as fp:
-            data = fp.read()
+        data = str(dh.import_data(day=__DAYNUM__, part=part, example=example, raw=True, dtype="str"))
     except OSError as exception:
         print(repr(exception))
         return None
-    verbose_msg("part 1", 1, verbose)
     # Get tokens
-    tokens = parse_data(data, do_dont=False, verbose=verbose)
+    if part == 1:
+        # part 1
+        tokens = parse_data(data, do_dont=False, verbose=verbose)
+    else:
+        # part 2
+        tokens = parse_data(data, do_dont=True, verbose=verbose)
     token_sum = 0
     # pylint: disable=eval-used
     for token in tokens:
         token_sum += eval(token)
-    verbose_msg("do/dont = False", 1, verbose)
-    verbose_msg(f"number of mul()-tokens = {len(tokens)}", 1, verbose)
-    verbose_msg(f"sum of mul()-tokens = {token_sum}", 1, verbose)
+    verbose_msg(f"number of tokens = {len(tokens)}", 1, verbose)
+    # verbose_msg(f"sum of tokens = {token_sum}", 1, verbose)
     return token_sum
 
 
-def part_2(example: bool = False, verbose: int = 0) -> int | None:
-    """part_2() -- just a wrapper"""
-    # Import data
-    # NB same full data as for part 1
-    data_path = get_data_path(daynum=__DAYNUM__, part=1, example=False)
-    if example:
-        data_path = get_data_path(daynum=__DAYNUM__, part=2, example=True)
-    try:
-        with open(data_path, encoding="utf-8") as fp:
-            data = fp.read()
-    except OSError as exception:
-        print(repr(exception))
-        return None
-    verbose_msg("part 2", 1, verbose)
-    # Get tokens
-    tokens = parse_data(data, do_dont=True, verbose=0)
-    token_sum = 0
-    # pylint: disable=eval-used
-    for token in tokens:
-        token_sum += eval(token)
-    verbose_msg("do/dont = True", 1, verbose)
-    verbose_msg(f"number of mul()-tokens = {len(tokens)}", 1, verbose)
-    verbose_msg(f"sum of mul()-tokens = {token_sum}", 1, verbose)
-    return token_sum
+# def part_2(example: bool = False, verbose: int = 0) -> int | None:
+#     """part_2() -- just a wrapper"""
+#     part = 2
+#     # Import data
+#     # NB same full data as for part 1
+#     try:
+#         data = str(dh.import_data(day=__DAYNUM__, part=part, example=example, raw=True, dtype="str"))
+#     except OSError as exception:
+#         print(repr(exception))
+#         return None
+#     verbose_msg("part 2", 1, verbose)
+#     # Get tokens
+#     tokens = parse_data(data, do_dont=True, verbose=verbose)
+#     token_sum = 0
+#     # pylint: disable=eval-used
+#     for token in tokens:
+#         token_sum += eval(token)
+#     verbose_msg(f"number of tokens = {len(tokens)}", 1, verbose)
+#     # verbose_msg(f"sum of tokens = {token_sum}", 1, verbose)
+#     return token_sum
 
 
 def main():
@@ -253,14 +248,9 @@ def main():
                         choices=[0, 1, 2],
                         help='get diagnostics')
     args = parser.parse_args()
-    if args.part == 1:
-        pre = time.time()
-        token_sum = part_1(args.example, args.verbose)
-        post = time.time()
-    else:
-        pre = time.time()
-        token_sum = part_2(args.example, args.verbose)
-        post = time.time()
+    pre = time.time()
+    token_sum = part_1_2(args.part, args.example, args.verbose)
+    post = time.time()
     if args.time:
         print(f"token_sum = {token_sum}", end="\t")
         print(f"({(post - pre):.4f}s)")

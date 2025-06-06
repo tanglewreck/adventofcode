@@ -91,10 +91,12 @@
 """
 
 import argparse
+# from typing import Iterable, List
 import numpy as np
 import pandas as pd
-# from pathlib import Path
 from utils import import_data
+from utils import DataHandler as dh
+from utils import verbose_msg
 
 
 __DAYNUM__ = 2
@@ -148,7 +150,7 @@ def check_row_safety(row: np.ndarray,
         # A row is not safe unless all diffs are less than or equal to 3
         if not all(abs(diffs) <= 3):
             print(f"Row {row_num:003d} NOT safe: diff TOO LARGE: {list(row)}")
-    if verbose > 0:
+    if verbose > 1:
         # A row is safe if all diffs have same sign, and  all diffs
         # are less than or equal to 3:
         # flake8: ignore=E501
@@ -181,7 +183,7 @@ def recheck_row(row: np.ndarray, verbose: int = 0) -> bool:
         # the removed item
         popped = arr[k]
         # the popped (shortened) array
-        popped_arr = np.array(list(arr[0:k]) + list(arr[k+1:]))
+        popped_arr = np.array(list(arr[0:k]) + list(arr[k + 1:]))
         # return both the popped item and the popped array
         return popped, popped_arr
 
@@ -203,17 +205,17 @@ def recheck_row(row: np.ndarray, verbose: int = 0) -> bool:
                     print(f"original row: {row}")
                     print(f"popped row: {temp_row}")
                     print()
-                if verbose > 0:
+                if verbose > 1:
                     print(f"safe with item {i} removed: {removed_item}: ")
                 # Break out of the for-loop if the modified row is safe
                 break
         # If the row is unsafe no matter which item is removed,
         # barf (if verbosity is high enough)
         if not now_safe:
-            if verbose > 0:
+            if verbose > 1:
                 print("not safe, no matter what")
     else:
-        if verbose > 0:
+        if verbose > 1:
             print("already safe")
     # Return True/False depending on if the row can be made
     # safe or not.
@@ -221,67 +223,55 @@ def recheck_row(row: np.ndarray, verbose: int = 0) -> bool:
 
 
 def part_1(example: bool = False, verbose: int = 0):
-    """day_2_part_1()"""
-    if verbose > 0:
-        print("vebose > 0")
+    """part_1()"""
     # Import data to dataframe
-    df: pd.DataFrame = import_data(daynum=__DAYNUM__, part=1, example=example)
+    df = dh.import_data(day=__DAYNUM__, part=1, example=example, raw=True)
+    df = np.asarray(df)
     # Count the number of safe rows (reports)
-    nsafe_reports = 0
+    n_safe = 0
     # For each row in the data frame...
-    for k in range(df.shape[0]):  # shape is (1000, 8)
+    n_total = len(df)
+    for k in range(n_total):  # shape is (1000, 8)
         # Convert the row to a list (so that we can drop zeros at
-        # the end; np.ndarrays do no allow this)
-        dfnp = np.asarray(df)  # to make linters happy...
-        row = dfnp[k, ]  # to make linters happy...
-        # row = np.array(df.iloc[k, ])
-        # As long as there are zeros at the end of the list,
-        # drop them.
+        # the end; np.ndarrays do not allow this)
+        row = df[k, ]
+        # As long as there are zeros at the end of the list, drop them.
         while row[-1] == 0:
             row = row[:-1]
         # Now, check if the row/report is safe
         if check_row_safety(row, k, verbose=0):
-            nsafe_reports += 1
-    print(f"Number of safe reports = {nsafe_reports} (out of {df.shape[0]})")
+            n_safe += 1
+    verbose_msg(f"Number of safe reports = {n_safe} (out of {n_total})", 0, verbose)
 
 
 def part_2(example: bool = False, verbose: int = 0):
-    """part_2()"""
+    """part_2() -- mostly the same code as in part_1(), 'cause I'm lazy"""
     # Import data to dataframe (using the same data as part_1())
-    df = np.asarray(import_data(daynum=__DAYNUM__, part=1, example=example))
-    # dfnp = np.asarray(df)  # to make linters happy...
-    if verbose > 0:
-        print(df)
+    df = dh.import_data(day=__DAYNUM__, part=1, example=example, raw=True)
+    df = np.asarray(df)
     # Count the number of safe rows (reports)
-    n_safe_reports = 0
+    n_safe = 0
     n_salvagable_reports = 0
     # For each row in the data frame...
-    for k in range(df.shape[0]):  # shape is (1000, 8)
+    n_total = len(df)
+    for k in range(n_total):  # shape is (1000, 8)
         # Convert the row to a list (so that we can drop zeros at
-        # the end; np.ndarrays do no allow this)
-        # row = list(df.iloc[k, ])
-        # row = df[k, ]
+        # the end; np.ndarrays do not allow this)
         row = df[k]
-        # As long as there are zeros at the end of the list,
-        # drop them.
+        # As long as there are zeros at the end of the list, drop them.
         while row[-1] == 0:
             row = row[:-1]
         # Now, check if the row/report is safe
         if check_row_safety(row, k, verbose=verbose):
-            n_safe_reports += 1
+            n_safe += 1
         else:  # Re-check row with one item removed
             if recheck_row(row, verbose=verbose):
                 # print(f"Row {k:003d} is salvagable: {row}")
                 n_salvagable_reports += 1
-    print("Number of originally safe reports = "
-          f"{n_safe_reports}")
-    print("Number of salvagable reports = "
-          f"{n_salvagable_reports}")
-    print("Number of safe reports (total) = "
-          f"{n_safe_reports + n_salvagable_reports}")
-    print("Number of unsafe reports = "
-          f"{df.shape[0] - n_salvagable_reports - n_safe_reports} "
-          f"(out of {df.shape[0]})")
+    n_unsafe = n_total - n_salvagable_reports - n_safe
+    verbose_msg(f"Number of salvagable reports = {n_salvagable_reports}", 1, verbose)
+    verbose_msg(f"Number of unsafe reports = {n_unsafe} (out of {n_total})", 1, verbose)
+    verbose_msg(f"Number of safe reports = {n_safe + n_salvagable_reports} (out of {n_total})", 0, verbose)
 
 
 def main():

@@ -1,6 +1,6 @@
 """
     get_input_file
-        return path to datafile for day <daynum>, part <part>
+        return path to datafile for day <day>, part <part>
 """
 
 import os
@@ -9,10 +9,10 @@ from pathlib import Path
 from helpers import __DATADIR__
 
 
-def get_data_path(daynum: int, part: int, example: bool = False) -> Path:
+def get_data_path(day: int, part: int, example: bool = False) -> Path:
     """
         get_data_path
-            return path to datafile for day <daynum>, part <part>
+            return path to datafile for day <day>, part <part>
     """
     #
     # import argparse
@@ -20,7 +20,7 @@ def get_data_path(daynum: int, part: int, example: bool = False) -> Path:
     # Check for a commandline argument and use that as
     # the path to the file containing the input data
     # Default data input
-    data_path = Path(f"{__DATADIR__}/day_{daynum}_part_{part}")
+    data_path = Path(f"{__DATADIR__}/day_{day}_part_{part}")
     try:
         if example:
             data_path = pathlib.Path(str(data_path) + "_example")

@@ -166,7 +166,7 @@ def part_1(example: bool = False, verbose: int = 0):
     #   - Sort columns
     #   - For each row, compute the distance. Add to 'total_distance'
     # Import data
-    df = import_data(daynum=1, part=1, example=example)
+    df = import_data(day=1, part=1, example=example)
     # Sort columns
     sort_data(df)
     if verbose > 0:
@@ -197,7 +197,7 @@ def part_2(example: bool = False, verbose: int = 0):
 
     # import data to dataframe
     # use the same datafile as in part 1
-    df = import_data(daynum=1, part=1, example=example)
+    df = import_data(day=1, part=1, example=example)
     if verbose > 0:
         print(df)
 
