@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
 
     --- Day 4: Ceres Search ---
@@ -122,59 +123,79 @@
 
 """
 import argparse
+import time
 from pathlib import Path
-from helpers.day_4_count_matches import count_matches
-from helpers.day_4_xmas_count import count_xmas
-from helpers.day_4_xmas import x_mas_list, x_mas_pd, x_mas_np
-from utils.as_dataframe import as_dataframe
-from utils.get_data_path import get_data_path
-from utils.verbose_msg import verbose_msg
+from helpers import count_matches
+from helpers import count_xmas
+from helpers import x_mas_list, x_mas_pd, x_mas_np
+from utils import as_dataframe
+from utils import get_data_path
+from utils import verbose_msg
 
+__version__ = "2025.06.07_01"
+__author__ = "mier"
 
-# These determine, which data file is read
+# this determines which data files are read
 __DAYNUM__ = 4  # this is day 4
-__PART__ = 1  # this is part 1 of day 4
 
-# This is the string we're looking for
+# shis is the string we're looking for
 SEARCH_STRING = "xmas"
 
 
-def part_1(example: bool = False, verbose: int = 0):
+def part_1(example: bool = False, verbose: int = 0, time_it: bool = False):
     """
         part_1()
     """
-    # this is part 2
+    # get data
     part = 1
-    # get path to datafile
     data_path: Path = get_data_path(__DAYNUM__, part=part, example=example)
-    verbose_msg(f"using path: {data_path}", 1, verbose)
-    # get dataframe
     df = as_dataframe(data_path, save=False)
-    verbose_msg(f"{df}", 1, verbose)
+    verbose_msg(f"{df}", 2, verbose)
+    # ...
     # Search for target string and print results
-    print("Counting using count_matches()")
-    n_matches = count_matches(df, SEARCH_STRING, verbose=1)
-    print(f"Number of matches = {n_matches} (count_matches, lists only)")
-    print()
-    print("Counting using count_xmas()")
-    n_matches_2 = count_xmas(df)
-    print(f"Number of matches = {n_matches_2} (count_xmas)")
+    pre = time.time()
+    n_matches = count_matches(df, SEARCH_STRING, verbose=verbose)
+    post = time.time()
+    print(f"matches = {n_matches} (count_matches, using regexps)")
+    if time_it:
+        print(f"elapsed = {post - pre:.4f}s")
+
+    pre = time.time()
+    n_matches = count_xmas(df)
+    post = time.time()
+    print(f"matches = {n_matches} (count_xmas)")
+    if time_it:
+        print(f"elapsed = {post - pre:.4f}s")
 
 
-def part_2(example: bool = False, verbose: int = 0):
+def part_2(example: bool = False, verbose: int = 0, time_it: bool = False):
     """part_2()"""
-    # this is part 2
+    # get data
     part = 2
-    # get path to datafile
     data_path: Path = get_data_path(__DAYNUM__, part=part, example=example)
-    verbose_msg(f"using path: {data_path}", 1, verbose)
-    # get dataframe
     df = as_dataframe(data_path, save=False)
-    verbose_msg(f"{df}", 1, verbose)
-    # Search for target string and print results
-    print("using lists:", x_mas_list(df))
-    print("using np.asarray:", x_mas_np(df))
-    print("using the pd.DataFrame:", x_mas_pd(df))
+    verbose_msg(f"{df}", 2, verbose)
+
+    # x_mas_list()
+    pre = time.time()
+    print("lists:", x_mas_list(df))
+    post = time.time()
+    if time_it:
+        print(f"elapsed = {post - pre:.4f}s")
+
+    # x_mas_np()
+    pre = time.time()
+    print("numpy:", x_mas_np(df))
+    post = time.time()
+    if time_it:
+        print(f"elapsed = {post - pre:.4f}s")
+
+    # x_mas_pd()
+    pre = time.time()
+    print("pandas:", x_mas_pd(df))
+    post = time.time()
+    if time_it:
+        print(f"elapsed = {post - pre:.4f}s")
 
 
 def main():
@@ -188,17 +209,19 @@ def main():
     parser.add_argument('--example', default=False,
                         action='store_true',
                         help='use example datafile')
-    parser.add_argument('--input', type=argparse.FileType('r'),
-                        help='not used')
+    parser.add_argument('--time', default=False,
+                        action='store_true',
+                        help='time it')
     parser.add_argument('--verbose', type=int, default=0,
                         choices=[0, 1, 2],
                         help='get diagnostics')
     args = parser.parse_args()
     if args.part == 1:
-        part_1(args.example, args.verbose)
+        part_1(args.example, args.verbose, args.time)
     else:
-        part_2(args.example, args.verbose)
+        part_2(args.example, args.verbose, args.time)
 
 
 if __name__ == "__main__":
     main()
+# vim: set numberwidth=4 number noignorecase :

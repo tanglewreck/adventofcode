@@ -1,4 +1,4 @@
-# vim: set numberwidth=4 number noignorecase :
+#!/usr/bin/env python
 """
 
     --- Day 5: Print Queue ---
@@ -234,8 +234,6 @@ def part_1(example: bool, verbose: int = 0):
         mid_index = int(len_update / 2)
         update_valid = True
         verbose_msg(f"update[{update_index}]: {update}", 1, verbose)
-        # if verbose > 1:
-        #    print(f"update[{update_index}]: {update}")
         # walk through each update and check that for each
         # page-number and for each page-numbers following
         # that page-number, no rule stipulates that one of
@@ -251,18 +249,20 @@ def part_1(example: bool, verbose: int = 0):
             valid_updates.append(update_index)
             verbose_msg(f"update[{update_index}]: OK", 2, verbose)
             if len_update % 2 != 1:
+                # shouldn't get here
                 print(f"len(update[{update_index}]) is even: BAD")
             else:
                 sum_mid_valid += update[mid_index]
                 sum_mid_all += update[mid_index]
-                verbose_msg(f"mid = {update[mid_index]}\n" +
-                            f"sum = {sum_mid_valid}", 2, verbose)
+                verbose_msg(f"mid = {update[mid_index]}\n", 2, verbose)
+                verbose_msg(f"sum = {sum_mid_valid}", 2, verbose)
         else:
             all_updates_ok = False
             sum_mid_all += update[mid_index]
             invalid_updates.append(update_index)
             verbose_msg(f"update[{update_index}]: NOT ok", 2, verbose)
     if check_for_empty_rules(rules, verbose=verbose):
+        # shouldn't get here
         verbose_msg("empty rules found", 1, verbose)
     else:
         verbose_msg("NO empty rules found", 1, verbose)
@@ -307,8 +307,6 @@ def main():
     parser.add_argument('--example', default=False,
                         action='store_true',
                         help='use example datafile')
-    parser.add_argument('--input', type=argparse.FileType('r'),
-                        help='not used')
     parser.add_argument('--verbose', type=int, default=0,
                         choices=[0, 1, 2],
                         help='get diagnostics')
@@ -321,3 +319,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+# vim: set numberwidth=4 number noignorecase :
