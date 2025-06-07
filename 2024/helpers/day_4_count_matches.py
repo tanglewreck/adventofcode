@@ -20,21 +20,25 @@ def count_matches(df: pd.DataFrame,
                   verbose: int = 0) -> int:
     """
         Search for a string embedded in the row, columns, and diagonals
-        of a dataframe
+        of a dataframe using regular expressions (which enable case-
+        insensitive searches, if that is what you want...)
     """
     n_rows = len(df)
     n_cols = len(df.iloc[0])
-    if verbose:
+    if verbose > 0:
         print(f"n_rows = {n_rows}")
         print(f"n_cols = {n_cols}")
     if not search_string:
         search_string = "xmas"
+
     # Allow data to contain '_', '.', ',', ' ', and ignore them in the search
     r = re.compile(r'[_., ]*'.join(re.split('', search_string)[1:-1]), re.IGNORECASE)
     rr = re.compile(r'[_., ]*'.join(re.split('', search_string[::-1])[1:-1]), re.IGNORECASE)
+
     # Total number of hits
     n_matches_tot = 0
-    # Search rows
+
+    # Search ROWS
     n_matches = 0
     for row in range(n_rows):
         row_str = "".join(df.iloc[row, 0:n_cols])
@@ -48,9 +52,10 @@ def count_matches(df: pd.DataFrame,
             print("count():", row_str.count("XMAS") + row_str.count("SAMX"))
             print("count():", row_str.count("xmas") + row_str.count("samx"))
     n_matches_tot += n_matches
-    if verbose:
+    if verbose > 0:
         print(f"n_matches (rows) = {n_matches}")
-    # Search columns
+
+    # Search COLUMNS
     n_matches = 0
     for col in range(n_cols):
         col_str = "".join(df.iloc[:, col])
@@ -65,9 +70,10 @@ def count_matches(df: pd.DataFrame,
             print("count():", col_str.count("XMAS") + col_str.count("SAMX"))
             print("count():", col_str.count("xmas") + col_str.count("samx"))
     n_matches_tot += n_matches
-    if verbose:
+    if verbose > 0:
         print(f"n_matches (cols) = {n_matches}")
-    # Search diagonals
+
+    # Search DIAGONALS
     n_matches = 0
     for k, diag in enumerate(extract_diagonals(df)):
         diag_str = "".join(diag)
@@ -84,7 +90,7 @@ def count_matches(df: pd.DataFrame,
         if verbose > 1:
             print(f"{k}: diag_str = {diag_str}")
     n_matches_tot += n_matches
-    if verbose:
+    if verbose > 0:
         print(f"n_matches (diags) = {n_matches}")
     # Return number of matches
     return n_matches_tot
