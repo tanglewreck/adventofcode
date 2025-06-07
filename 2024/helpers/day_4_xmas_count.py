@@ -27,7 +27,7 @@ def upper_right_right_to_left(df: pd.DataFrame):
     diags = []
     for r in range(n):
         diag = []
-        col = n-2-r
+        col = n - 2 - r
         for row in range(0, n):
             diag.append(df.iloc[row, col])
             col -= 1
@@ -37,7 +37,7 @@ def upper_right_right_to_left(df: pd.DataFrame):
     return diags
 
 
-def upper_left_left_to_right(df: pd.DataFrame):
+def upper_left_left_to_right(df: pd.DataFrame, verbose: int = 0):
     """
         upper_right_right_to_left()
 
@@ -49,15 +49,15 @@ def upper_left_left_to_right(df: pd.DataFrame):
     diags = []
     for r in range(n):
         diag = []
-        col = r+1
-        for row in range(n-1-r):
+        col = r + 1
+        for row in range(n - 1 - r):
             diag.append(df.iloc[row, col])
             col += 1
         diags.append(diag)
     return diags
 
 
-def lower_right_right_to_left(df: pd.DataFrame):
+def lower_right_right_to_left(df: pd.DataFrame, verbose: int = 0):
     """
         upper_right_right_to_left()
 
@@ -67,7 +67,7 @@ def lower_right_right_to_left(df: pd.DataFrame):
     """
     n = len(df)
     diags = []
-    for r in range(n-1, -1, -1):
+    for r in range(n - 1, -1, -1):
         diag = []
         col = n - 1
         for row in range(r, n):
@@ -77,7 +77,7 @@ def lower_right_right_to_left(df: pd.DataFrame):
     return diags
 
 
-def lower_left_left_to_right(df: pd.DataFrame):
+def lower_left_left_to_right(df: pd.DataFrame, verbose: int = 0):
     """
         upper_right_right_to_left()
 
@@ -87,7 +87,7 @@ def lower_left_left_to_right(df: pd.DataFrame):
     """
     n = len(df)
     diags = []
-    for r in range(n-1, -1, -1):
+    for r in range(n - 1, -1, -1):
         diag = []
         col = 0
         for row in range(r, n):
@@ -112,7 +112,7 @@ def get_diags(df: pd.DataFrame):
     return diags
 
 
-def count_xmas(df: pd.DataFrame) -> int:
+def count_xmas(df: pd.DataFrame, verbose: int = 0) -> int:
     """
         count_xmas()
 
@@ -134,7 +134,8 @@ def count_xmas(df: pd.DataFrame) -> int:
     n_cols += sum((c.count("xmas") + c.count("samx") for c in col_strings))
     n_diags = sum((d.count("XMAS") + d.count("SAMX") for d in diag_strings))
     n_diags += sum((d.count("xmas") + d.count("samx") for d in diag_strings))
-    print(f"n_matches (rows) {n_rows}")
-    print(f"n_matches (cols) {n_cols}")
-    print(f"n_matches (diags) {n_diags}")
+    if verbose > 0:
+        print(f"n_matches (rows) {n_rows}")
+        print(f"n_matches (cols) {n_cols}")
+        print(f"n_matches (diags) {n_diags}")
     return n_rows + n_cols + n_diags
