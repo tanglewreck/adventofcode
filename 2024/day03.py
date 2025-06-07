@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 """
     --- Day 3: Mull It Over ---
 
@@ -242,8 +243,6 @@ def main():
     parser.add_argument('--example', default=False,
                         action='store_true',
                         help='use example datafile')
-    parser.add_argument('--input', type=argparse.FileType('r'),
-                        help='not used')
     parser.add_argument('--verbose', type=int, default=0,
                         choices=[0, 1, 2],
                         help='get diagnostics')
@@ -260,3 +259,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+# vim: set numberwidth=4 number noignorecase :

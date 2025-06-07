@@ -4,7 +4,6 @@
         'day_<n_day>[_part_<n_part>].py programs'
 """
 
-import os
 from typing import NewType
 from pandas import DataFrame
 from . as_dataframe import as_dataframe
@@ -18,13 +17,15 @@ from . __settings__ import __PREFIX__
 from . __settings__ import __DATA_PREFIX__
 # from . data_handler import DataHandler as dh
 
-__version__ = "2025.06.06_02"
+__version__ = "2025.06.07_01"
 __author__ = "mier"
 
 ImportDataList = NewType("ImportDataList", list[list[int]])
 ImportDataDf = NewType("ImportDataDf", DataFrame)
 
-__all__ = ["__PREFIX__",
+__all__ = ["__version__",
+           "__author__",
+           "__PREFIX__",
            "__DATADIR__",
            "__DATA_PREFIX__",
            "DataHandler",
